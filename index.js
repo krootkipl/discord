@@ -6,17 +6,10 @@ client.once('ready', () => {
 });
 
 client.on('message', (message) => {
-  switch (message) {
-    case `!server`:
-      message.channel.send(`Ten serwer nazywa się: ${message.guild.name}`);
-      break;
-
-    case `!covid`:
-      message.channel.send('NIE ISTNIEJE');
-      break;
-
-    default:
-      break;
+  if (message === `!server`) {
+    message.channel.send(`Ten serwer nazywa się: ${message.guild.name}`);
+  } else if (message === `!covid`) {
+    message.channel.send('NIE ISTNIEJE');
   }
 });
 
