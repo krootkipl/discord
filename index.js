@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-const { prefix } = require('config.json');
 
 client.once('ready', () => {
   console.log('Ready!');
@@ -8,11 +7,11 @@ client.once('ready', () => {
 
 client.on('message', (message) => {
   switch (message) {
-    case `${prefix}server`:
+    case `!server`:
       message.channel.send(`Ten serwer nazywa się: ${message.guild.name}`);
       break;
 
-    case `${prefix}covid`:
+    case `!covid`:
       message.channel.send('NIE ISTNIEJE');
       break;
 
