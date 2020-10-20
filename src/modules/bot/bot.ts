@@ -1,6 +1,7 @@
-import { kebabCase, toLower } from 'lodash';
-import { Client, Message, Role } from 'discord.js';
+import { Client, Message } from 'discord.js';
+
 import { PREFIX } from '../../utils/consts';
+import { roleCommand } from './commands/role';
 
 export class Bot {
   public listen(): void {
@@ -14,43 +15,13 @@ export class Bot {
 
       const args = message.content.slice(PREFIX.length).trim().split(' ');
       const command = args.shift().toLowerCase();
-    
+
       if (command === 'rola') {
-        const commandType = args.shift().toLowerCase();
-
-        if (!['dodaj', 'usun'].includes(commandType)) {
-          return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nazwa_roli></nazwa_roli>`);
-        }
-
-        const roleNameKebab = args.map(toLower).join('-');
-
-        const role = message.guild.roles.cache.find((v: Role) => kebabCase(v.name) === roleNameKebab);
-
-        if (!role) return;
-
-        const hasRole = !!message.member.roles.cache.find((v: Role) => v.id === role.id);
-
-        if (commandType === 'dodaj') {
-          if (hasRole) {
-            return message.channel.send('Posiadasz już tę rolę!');
-          }
-
-          message.member.roles.add(role.id);
-
-          return message.channel.send(`Rola >${role.name}< dodana!`);
-        }
-
-        if (commandType === 'usun') {
-          if (!hasRole) {
-            return message.channel.send('Nie posiadasz tej roli!');
-          }
-
-          message.member.roles.remove(role.id);
-
-          return message.channel.send(`Rola >${role.name}< usunięta!`)
-        }
+        return roleCommand(message, args);
+      } else {
+        return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola')
       }
-    })
+    });
 
     myClient._login();
   }
@@ -65,10 +36,10 @@ export class MyClient {
 
   public _ready(): void {
     console.log('client starting...');
-    
+
     this.client.once('ready', () => {
       console.log('Ready!');
-    })
+    });
   }
 
   public _login(): Promise<string> {
