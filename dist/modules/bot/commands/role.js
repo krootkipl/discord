@@ -6,14 +6,14 @@ const lodash_1 = require("lodash");
 const helpers_1 = require("../../../utils/helpers");
 exports.roleCommand = (message, args) => {
     if (!args.length) {
-        return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nazwa_roli>`);
+        return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
     }
     const commandType = args.shift().toLowerCase();
     if (!helpers_1.checkPermission(message.member, discord_js_1.Permissions.FLAGS.MANAGE_ROLES)) {
         return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
     }
     if (!['dodaj', 'usun'].includes(commandType)) {
-        return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nazwa_roli>`);
+        return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
     }
     const mentions = !!message.mentions.users.size;
     if (!mentions) {
@@ -42,18 +42,16 @@ exports.roleCommand = (message, args) => {
 };
 const addRoleForMember = (guildMember, role, message) => {
     if (!!guildMember.roles.cache.find((r) => r.id === role.id)) {
-        message.channel.send(`Użytkownik ${guildMember.nickname} posiada już rolę ${role.name}!`);
-        return;
+        return message.channel.send(`Użytkownik ${guildMember.nickname} posiada już rolę ${role.name}!`);
     }
     guildMember.roles.add(role);
-    message.channel.send(`Rola ${role.name} nadana użytkownikowi ${guildMember.user.username}`);
+    return message.channel.send(`Rola ${role.name} nadana użytkownikowi ${guildMember.user.username}`);
 };
 const removeRoleForMember = (guildMember, role, message) => {
     if (!guildMember.roles.cache.find((r) => r.id === role.id)) {
-        message.channel.send(`Użytkownik ${guildMember.nickname} nie posiada roli ${role.name}!`);
-        return;
+        return message.channel.send(`Użytkownik ${guildMember.nickname} nie posiada roli ${role.name}!`);
     }
     guildMember.roles.remove(role);
-    message.channel.send(`Rola ${role.name} usunięta użytkownikowi ${guildMember.user.username}`);
+    return message.channel.send(`Rola ${role.name} usunięta użytkownikowi ${guildMember.user.username}`);
 };
 //# sourceMappingURL=role.js.map

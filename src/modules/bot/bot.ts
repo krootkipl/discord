@@ -1,6 +1,7 @@
 import { Client, Message } from 'discord.js';
 
 import { PREFIX } from '../../utils/consts';
+import { kalkCommand } from './commands/kalkulator';
 import { roleCommand } from './commands/role';
 
 export class Bot {
@@ -18,6 +19,10 @@ export class Bot {
 
       if (command === 'rola') {
         return roleCommand(message, args);
+      // } else if {
+      //   command === 'ban'
+      } else if (command === 'kalkulator') {
+        return kalkCommand(message);
       } else {
         return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola')
       }

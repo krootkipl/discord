@@ -4,9 +4,8 @@ import { measureMemory } from 'vm';
 import { checkPermission } from '../../../utils/helpers';
 
 export const roleCommand = (message: Message, args: string[]) => {
-
   if (!args.length) {
-    return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nazwa_roli>`);
+    return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
   }
 
   const commandType = args.shift().toLowerCase();
@@ -16,7 +15,7 @@ export const roleCommand = (message: Message, args: string[]) => {
   }
 
   if (!['dodaj', 'usun'].includes(commandType)) {
-    return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nazwa_roli>`);
+    return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
   }
 
   const mentions = !!message.mentions.users.size;
@@ -55,20 +54,18 @@ export const roleCommand = (message: Message, args: string[]) => {
 
 const addRoleForMember = (guildMember: GuildMember, role: Role, message: Message) => {
   if (!!guildMember.roles.cache.find((r: Role) => r.id === role.id)) {
-    message.channel.send(`Użytkownik ${guildMember.nickname} posiada już rolę ${role.name}!`);
-    return;
+    return message.channel.send(`Użytkownik ${guildMember.nickname} posiada już rolę ${role.name}!`);
   }
 
   guildMember.roles.add(role);
-  message.channel.send(`Rola ${role.name} nadana użytkownikowi ${guildMember.user.username}`);
+  return message.channel.send(`Rola ${role.name} nadana użytkownikowi ${guildMember.user.username}`);
 };
 
 const removeRoleForMember = (guildMember: GuildMember, role: Role, message: Message) => {
   if (!guildMember.roles.cache.find((r: Role) => r.id === role.id)) {
-    message.channel.send(`Użytkownik ${guildMember.nickname} nie posiada roli ${role.name}!`);
-    return;
+    return message.channel.send(`Użytkownik ${guildMember.nickname} nie posiada roli ${role.name}!`);
   }
 
   guildMember.roles.remove(role);
-  message.channel.send(`Rola ${role.name} usunięta użytkownikowi ${guildMember.user.username}`);
+  return message.channel.send(`Rola ${role.name} usunięta użytkownikowi ${guildMember.user.username}`);
 };
