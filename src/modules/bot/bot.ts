@@ -1,6 +1,7 @@
 import { Client, Message } from 'discord.js';
 
 import { PREFIX } from '../../utils/consts';
+import { findCommand } from './commands/find';
 import { kalkCommand } from './commands/kalkulator';
 import { roleCommand } from './commands/role';
 
@@ -19,12 +20,14 @@ export class Bot {
 
       if (command === 'rola') {
         return roleCommand(message, args);
-      // } else if {
-      //   command === 'ban'
+        // } else if {
+        //   command === 'ban'
       } else if (command === 'kalkulator') {
         return kalkCommand(message);
+      } else if (command === 'znajdz') {
+        return findCommand(message, args);
       } else {
-        return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola')
+        return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator');
       }
     });
 
