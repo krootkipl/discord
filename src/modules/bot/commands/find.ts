@@ -1,7 +1,5 @@
-import { Collection, GuildMember, Message, MessageEmbed, Permissions, Role, User } from 'discord.js';
-import { kebabCase, remove, toLower } from 'lodash';
-import { measureMemory } from 'vm';
-import { checkPermission } from '../../../utils/helpers';
+import { Message } from 'discord.js';
+import { toLower, trim } from 'lodash';
 
 const atlas: Object[] = require('../../../../resources/atlas.json');
 
@@ -11,20 +9,19 @@ export const findCommand = (message: Message, args: string[]) => {
   }
 
   const player = args[0];
-  console.log('player: ', player);
 
   const fullPlayersInfo = atlas.filter((v) => {
     if (v.hasOwnProperty('Gracz (Status)')) {
       const name = v?.['Gracz (Status)'];
       if (typeof name === 'string') {
-        return name.includes(player);
+        return trim(toLower(name)) === trim(toLower(player));
       }
 
       return false;
     }
   });
 
-  if (!!fullPlayersInfo.length) {
+  if (!fullPlayersInfo.length) {
     return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
   }
 
@@ -41,7 +38,7 @@ export const findCommand = (message: Message, args: string[]) => {
 
   message.channel.send(
     `Gracz: ${player} ${
-      !!displayPlayerInfo[0].alliance.length ? `należący do sojuszu ${displayPlayerInfo[0].alliance}` : ''
+      !!displayPlayerInfo?.[0]?.alliance ? `należący do sojuszu ${displayPlayerInfo[0].alliance}` : ''
     } - znalezione planety:`
   );
 

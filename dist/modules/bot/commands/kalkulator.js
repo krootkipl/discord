@@ -24,6 +24,8 @@ const kalkList = [
     },
 ];
 exports.kalkCommand = (message) => {
-    return message.channel.send(kalkList.map((v) => `${v.name}: \n${v.url}\n----------------------------------`));
+    return message.channel
+        .send(kalkList.map((v) => `${v.name}: \n${v.url}\n----------------------------------`))
+        .then((v) => v.suppressEmbeds(true));
 };
 //# sourceMappingURL=kalkulator.js.map
