@@ -5,6 +5,7 @@ import { toLower, trim } from 'lodash';
 const atlas: Object[] = require('../../../../resources/atlas.json');
 
 interface DisplayPlayerInfo {
+  player: string;
   system: number;
   gal: number;
   pos: number;
@@ -19,13 +20,17 @@ export const findCommand = (message: Message, args: string[]) => {
     return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>`);
   }
 
+  if (args[0].length < 3) {
+    return message.channel.send(`Wpisz przynajmniej 3 znaki nicku gracza!`);
+  }
+
   const player = args[0];
 
   const fullPlayersInfo = atlas.filter((v) => {
     if (v.hasOwnProperty('Gracz (Status)')) {
       const name = v?.['Gracz (Status)'];
       if (typeof name === 'string') {
-        return trim(toLower(name)) === trim(toLower(player));
+        return trim(toLower(name)).includes(trim(toLower(player)));
       }
 
       return false;
@@ -38,9 +43,10 @@ export const findCommand = (message: Message, args: string[]) => {
 
   const displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
     let planetName: string = v['Planeta / Nazwa (Aktywność)'];
-    planetName = planetName.replace(planetName.match(/\((.*?)\)/g)[0], '');
+    planetName = planetName.replace(planetName.match(/\((.*?)\)/g)?.[0] ?? '', '');
 
     return {
+      player: v['Gracz (Status)'],
       system: v['Gal'],
       gal: v['System'],
       pos: v['Pos'],
@@ -51,22 +57,37 @@ export const findCommand = (message: Message, args: string[]) => {
     };
   });
 
-  message.channel.send(
-    `Gracz: ${player} ${
-      !!displayPlayerInfo?.[0]?.alliance ? `należący do sojuszu ${displayPlayerInfo[0].alliance}` : ''
-    } - znalezione planety (ładowanie może trwać parę sekund):`
-  );
+  if (displayPlayerInfo.length > 30) {
+    return message.channel.send(`Wpisz dokładniejszy nick, znalazłem ponad 30 wyników! Nie chcemy zaśmiecać chatu, prawda? :D`);
+  }
 
-  // const links = displayPlayerInfo.map((v) => `[${v.gal}:${v.system}:${v.pos} - ${v.planet}](https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.system})`)
-  displayPlayerInfo
-    .map((v) => {
-      return new MessageEmbed({
-        title: `${v.gal}:${v.system}:${v.pos} - ${v.planet}`,
-        url: `https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.system})`,
-        description: `${!!v.moon ? `Przy planecie znajduje się księżyc: ${v.moon}` : ''}`,
-      });
-    })
-    .forEach((v: MessageEmbed) => message.channel.send(v));
+  const multiplePlayersInfo: { [player: string]: DisplayPlayerInfo[] } = {};
+
+  displayPlayerInfo.forEach((v) => {
+    if (!multiplePlayersInfo[v.player]) {
+      multiplePlayersInfo[v.player] = [v];
+    } else {
+      multiplePlayersInfo[v.player].push(v);
+    }
+  });
+
+  Object.entries(multiplePlayersInfo).forEach((v: [string, DisplayPlayerInfo[]]) => {
+    message.channel.send(
+      `Gracz ${v[0]}${
+        !!v[1][0]?.alliance ? ` należący do sojuszu ${v[1][0].alliance}` : ''
+      } - znalezione planety (ładowanie może trwać parę sekund):`
+    );
+
+    v[1]
+      .map((x: DisplayPlayerInfo) => {
+        return new MessageEmbed({
+          title: `${x.gal}:${x.system}:${x.pos} - ${x.planet}`,
+          url: `https://mirkogame.pl/game.php?page=galaxy&galaxy=${x.gal}&system=${x.system})`,
+          description: `${!!x.moon ? `Przy planecie znajduje się księżyc: ${x.moon}` : ''}`,
+        });
+      })
+      .forEach((x: MessageEmbed) => message.channel.send(x));
+  });
 
   return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym!');
 };
