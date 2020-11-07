@@ -27,7 +27,7 @@ export class Bot {
       } else if (command === 'znajdz') {
         return findCommand(message, args);
       } else {
-        return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator');
+        return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
       }
     });
 

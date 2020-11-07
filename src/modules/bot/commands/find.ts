@@ -1,7 +1,18 @@
+import { MessageEmbed } from 'discord.js';
 import { Message } from 'discord.js';
 import { toLower, trim } from 'lodash';
 
 const atlas: Object[] = require('../../../../resources/atlas.json');
+
+interface DisplayPlayerInfo {
+  system: number;
+  gal: number;
+  pos: number;
+  planet: string;
+  alliance: string;
+  rank: string;
+  moon: string;
+}
 
 export const findCommand = (message: Message, args: string[]) => {
   if (!args.length) {
@@ -25,28 +36,37 @@ export const findCommand = (message: Message, args: string[]) => {
     return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
   }
 
-  const displayPlayerInfo = fullPlayersInfo.map((v) => {
+  const displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
+    let planetName: string = v['Planeta / Nazwa (Aktywność)'];
+    planetName = planetName.replace(planetName.match(/\((.*?)\)/g)[0], '');
+
     return {
       system: v['Gal'],
       gal: v['System'],
       pos: v['Pos'],
-      planet: v['Planeta / Nazwa (Aktywność)'],
+      planet: planetName,
       alliance: v['Sojusz'],
       rank: v['Pozycja'],
+      moon: v['Księżyc'],
     };
   });
 
   message.channel.send(
     `Gracz: ${player} ${
       !!displayPlayerInfo?.[0]?.alliance ? `należący do sojuszu ${displayPlayerInfo[0].alliance}` : ''
-    } - znalezione planety:`
+    } - znalezione planety (ładowanie może trwać parę sekund):`
   );
 
-  return message.channel
-    .send(
-      displayPlayerInfo.map((v) => {
-        return `${v.gal}:${v.system}:${v.pos} - ${v.planet} - https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.system}`;
-      })
-    )
-    .then((v) => v.suppressEmbeds(true));
+  // const links = displayPlayerInfo.map((v) => `[${v.gal}:${v.system}:${v.pos} - ${v.planet}](https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.system})`)
+  displayPlayerInfo
+    .map((v) => {
+      return new MessageEmbed({
+        title: `${v.gal}:${v.system}:${v.pos} - ${v.planet}`,
+        url: `https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.system})`,
+        description: `${!!v.moon ? `Przy planecie znajduje się księżyc: ${v.moon}` : ''}`,
+      });
+    })
+    .forEach((v: MessageEmbed) => message.channel.send(v));
+
+  return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym!');
 };
