@@ -13,7 +13,7 @@ export const findCommand = (message: Message, args: string[]) => {
   const player = args[0];
   console.log('player: ', player);
 
-  const fullPlayersIno = atlas.filter((v) => {
+  const fullPlayersInfo = atlas.filter((v) => {
     if (v.hasOwnProperty('Gracz (Status)')) {
       const name = v?.['Gracz (Status)'];
       if (typeof name === 'string') {
@@ -24,7 +24,11 @@ export const findCommand = (message: Message, args: string[]) => {
     }
   });
 
-  const displayPlayerInfo = fullPlayersIno.map((v) => {
+  if (!!fullPlayersInfo.length) {
+    return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
+  }
+
+  const displayPlayerInfo = fullPlayersInfo.map((v) => {
     return {
       system: v['Gal'],
       gal: v['System'],
