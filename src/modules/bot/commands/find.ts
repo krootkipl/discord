@@ -1,6 +1,7 @@
-import { MessageEmbed } from 'discord.js';
+import { MessageEmbed, Permissions } from 'discord.js';
 import { Message } from 'discord.js';
 import { toLower, trim } from 'lodash';
+import { checkPermission } from '../../../utils/helpers';
 
 const atlas: Object[] = require('../../../../resources/atlas.json');
 
@@ -16,6 +17,10 @@ interface DisplayPlayerInfo {
 }
 
 export const findCommand = (message: Message, args: string[]) => {
+  if (!checkPermission(message.member, Permissions.FLAGS.MANAGE_ROLES)) {
+    return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
+  }
+
   if (!args.length) {
     return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>`);
   }
