@@ -24,5 +24,7 @@ const kalkList: { name: string; url: string }[] = [
 ];
 
 export const kalkCommand = (message: Message) => {
-  return message.channel.send(kalkList.map((v) => `${v.name}: \n${v.url}\n----------------------------------`));
+  return message.channel
+    .send(kalkList.map((v) => `${v.name}: \n${v.url}\n----------------------------------`))
+    .then((v) => v.suppressEmbeds(true));
 };

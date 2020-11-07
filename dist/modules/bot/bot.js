@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MyClient = exports.Bot = void 0;
 const discord_js_1 = require("discord.js");
 const consts_1 = require("../../utils/consts");
+const find_1 = require("./commands/find");
 const kalkulator_1 = require("./commands/kalkulator");
 const role_1 = require("./commands/role");
 class Bot {
@@ -23,8 +24,11 @@ class Bot {
             else if (command === 'kalkulator') {
                 return kalkulator_1.kalkCommand(message);
             }
+            else if (command === 'znajdz') {
+                return find_1.findCommand(message, args);
+            }
             else {
-                return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola');
+                return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator');
             }
         });
         myClient._login();
