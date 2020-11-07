@@ -3,8 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.findCommand = void 0;
 const discord_js_1 = require("discord.js");
 const lodash_1 = require("lodash");
+const helpers_1 = require("../../../utils/helpers");
 const atlas = require('../../../../resources/atlas.json');
 exports.findCommand = (message, args) => {
+    if (!helpers_1.checkPermission(message.member, discord_js_1.Permissions.FLAGS.MANAGE_ROLES)) {
+        return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
+    }
     if (!args.length) {
         return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>`);
     }
