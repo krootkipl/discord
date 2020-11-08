@@ -16,7 +16,7 @@ class Bot {
             if (!message.content.startsWith(consts_1.PREFIX) || message.author.bot)
                 return;
             if (message.channel.id !== '774794913559740436') {
-                return message.channel.send('BZZZT... Nie działam na tym kanale!');
+                return null;
             }
             const args = message.content.slice(consts_1.PREFIX.length).trim().split(' ');
             const command = args.shift().toLowerCase();
@@ -31,8 +31,6 @@ class Bot {
             }
             if (command === 'rola') {
                 return role_1.roleCommand(message, args);
-                // } else if {
-                //   command === 'ban'
             }
             else if (command === 'kalkulator') {
                 kalkulator_1.kalkCommand(message);
