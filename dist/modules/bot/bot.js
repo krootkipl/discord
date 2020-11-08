@@ -13,11 +13,11 @@ class Bot {
         const myClient = new MyClient(client);
         myClient._ready();
         client.on('message', (message) => {
+            if (!message.content.startsWith(consts_1.PREFIX) || message.author.bot)
+                return;
             if (message.channel.id !== '774794913559740436') {
                 return message.channel.send('BZZZT... Nie działam na tym kanale!');
             }
-            if (!message.content.startsWith(consts_1.PREFIX) || message.author.bot)
-                return;
             const args = message.content.slice(consts_1.PREFIX.length).trim().split(' ');
             const command = args.shift().toLowerCase();
             if (!command.length) {
