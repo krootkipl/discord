@@ -13,6 +13,9 @@ class Bot {
         const myClient = new MyClient(client);
         myClient._ready();
         client.on('message', (message) => {
+            if (message.channel.id !== '774794913559740436') {
+                return message.channel.send('BZZZT... Nie działam na tym kanale!');
+            }
             if (!message.content.startsWith(consts_1.PREFIX) || message.author.bot)
                 return;
             const args = message.content.slice(consts_1.PREFIX.length).trim().split(' ');
@@ -21,7 +24,7 @@ class Bot {
                 return null;
             }
             if (!helpers_1.checkIfHasRoleByID(message.member, consts_1.ROLA_FLOCIARZ_ID)) {
-                if (message.member.id !== '381202451740622849') {
+                if (message.member.id !== consts_1.BOT_CHANNEL_ID) {
                     message.channel.send('Masz, poczęstuj się... nie dla psa, kurwaaaa!');
                     return message.channel.send('https://www.wykop.pl/cdn/c3201142/comment_hQTwVCV9joPqjdeJevpSwHSHVaseCwG7.gif');
                 }
