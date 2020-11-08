@@ -7,6 +7,7 @@ const atlas: Object[] = require('../../../../resources/atlas.json');
 
 interface DisplayPlayerInfo {
   player: string;
+  status: string;
   system: number;
   gal: number;
   pos: number;
@@ -32,8 +33,8 @@ export const findCommand = (message: Message, args: string[]) => {
   const player = args[0];
 
   const fullPlayersInfo = atlas.filter((v) => {
-    if (v.hasOwnProperty('Gracz (Status)')) {
-      const name = v?.['Gracz (Status)'];
+    if (v.hasOwnProperty('Gracz')) {
+      const name = v?.['Gracz'];
       if (typeof name === 'string') {
         return trim(toLower(name)).includes(trim(toLower(player)));
       }
@@ -51,7 +52,8 @@ export const findCommand = (message: Message, args: string[]) => {
     planetName = planetName.replace(planetName.match(/\((.*?)\)/g)?.[0] ?? '', '');
 
     return {
-      player: v['Gracz (Status)'],
+      player: v['Gracz'],
+      status: v['Status'],
       system: v['Gal'],
       gal: v['System'],
       pos: v['Pos'],
@@ -77,8 +79,9 @@ export const findCommand = (message: Message, args: string[]) => {
   });
 
   Object.entries(multiplePlayersInfo).forEach((v: [string, DisplayPlayerInfo[]]) => {
+    const status = statusSelector(v[1][0].status);
     message.channel.send(
-      `Gracz ${v[0]}${
+      `Gracz ${v[0]} ${status ?? ''}${
         !!v[1][0]?.alliance ? ` należący do sojuszu ${v[1][0].alliance}` : ''
       } - znalezione planety (ładowanie może trwać parę sekund):`
     );
@@ -94,5 +97,21 @@ export const findCommand = (message: Message, args: string[]) => {
       .forEach((x: MessageEmbed) => message.channel.send(x));
   });
 
-  return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym!');
+  return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 06.11.2020');
+};
+
+const statusSelector = (status: string) => {
+  switch (status) {
+    case 'i':
+      return 'nieaktywny przynajmniej 7 dni';
+
+    case 'I':
+      return 'nieaktywny przynajmniej 30 dni';
+
+    case 'u':
+      return 'gracz na urlopie';
+
+    default:
+      return null;
+  }
 };
