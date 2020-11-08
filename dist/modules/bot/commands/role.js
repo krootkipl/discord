@@ -28,10 +28,11 @@ exports.roleCommand = (message, args) => {
     if (!role) {
         return message.channel.send(`Nie znaleziono podanej roli!`);
     }
+    if (message.mentions.users.some((v) => v.id === '381202451740622849')) {
+        message.channel.send('Nie kombinuj xD');
+    }
     message.mentions.users.forEach((v) => {
         const guildMember = message.guild.members.cache.find((g) => g.id === v.id);
-        console.log('guildMember: ', guildMember.id);
-        console.log('message: ', message.member.id);
         if (!!guildMember) {
             if (commandType === 'dodaj') {
                 addRoleForMember(guildMember, role, message);
