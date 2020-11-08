@@ -7,7 +7,7 @@ export const roleCommand = (message: Message, args: string[]) => {
   if (!checkPermission(message.member, Permissions.FLAGS.MANAGE_ROLES)) {
     return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
   }
-  
+
   if (!args.length) {
     return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
   }
@@ -24,7 +24,6 @@ export const roleCommand = (message: Message, args: string[]) => {
     return message.channel.send(`Musisz podać użytkowników którym chcesz dodać / usunąć role!`);
   }
 
-
   message.mentions.users.forEach((v: User) => {
     const index = args.findIndex((arg) => arg.includes(v.id));
     args.splice(index, 1);
@@ -38,9 +37,12 @@ export const roleCommand = (message: Message, args: string[]) => {
     return message.channel.send(`Nie znaleziono podanej roli!`);
   }
 
+  if (message.mentions.users.some((v: User) => v.id === '381202451740622849')) {
+    message.channel.send('Nie kombinuj xD');
+  }
+  
   message.mentions.users.forEach((v: User) => {
     const guildMember = message.guild.members.cache.find((g: GuildMember) => g.id === v.id);
-
     if (!!guildMember) {
       if (commandType === 'dodaj') {
         addRoleForMember(guildMember, role, message);
@@ -70,5 +72,3 @@ const removeRoleForMember = (guildMember: GuildMember, role: Role, message: Mess
   guildMember.roles.remove(role);
   return message.channel.send(`Rola ${role.name} usunięta użytkownikowi ${guildMember.user.username}`);
 };
-
-

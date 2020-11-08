@@ -30,6 +30,8 @@ exports.roleCommand = (message, args) => {
     }
     message.mentions.users.forEach((v) => {
         const guildMember = message.guild.members.cache.find((g) => g.id === v.id);
+        console.log('guildMember: ', guildMember.id);
+        console.log('message: ', message.member.id);
         if (!!guildMember) {
             if (commandType === 'dodaj') {
                 addRoleForMember(guildMember, role, message);
