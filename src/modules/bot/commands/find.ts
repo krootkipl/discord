@@ -47,17 +47,14 @@ export const findCommand = (message: Message, args: string[]) => {
     return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
   }
 
-  const displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
-    let planetName: string = v['Planeta / Nazwa (Aktywność)'];
-    planetName = planetName.replace(planetName.match(/\((.*?)\)/g)?.[0] ?? '', '');
-
+  const displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {    
     return {
       player: v['Gracz'],
       status: v['Status'],
       system: v['Gal'],
       gal: v['System'],
       pos: v['Pos'],
-      planet: planetName,
+      planet: v['Planeta / Nazwa (Aktywność)'],
       alliance: v['Sojusz'],
       rank: v['Pozycja'],
       moon: v['Księżyc'],
@@ -81,7 +78,7 @@ export const findCommand = (message: Message, args: string[]) => {
   Object.entries(multiplePlayersInfo).forEach((v: [string, DisplayPlayerInfo[]]) => {
     const status = statusSelector(v[1][0].status);
     message.channel.send(
-      `Gracz ${v[0]} ${status ?? ''}${
+      `Gracz ${v[0]} ${status ? `(${status})` : ''}${
         !!v[1][0]?.alliance ? ` należący do sojuszu ${v[1][0].alliance}` : ''
       } - znalezione planety (ładowanie może trwać parę sekund):`
     );
