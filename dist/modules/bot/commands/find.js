@@ -29,16 +29,13 @@ exports.findCommand = (message, args) => {
         return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
     }
     const displayPlayerInfo = fullPlayersInfo.map((v) => {
-        var _a, _b;
-        let planetName = v['Planeta / Nazwa (Aktywność)'];
-        planetName = planetName.replace((_b = (_a = planetName.match(/\((.*?)\)/g)) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : '', '');
         return {
             player: v['Gracz'],
             status: v['Status'],
             system: v['Gal'],
             gal: v['System'],
             pos: v['Pos'],
-            planet: planetName,
+            planet: v['Planeta / Nazwa (Aktywność)'],
             alliance: v['Sojusz'],
             rank: v['Pozycja'],
             moon: v['Księżyc'],
@@ -59,7 +56,7 @@ exports.findCommand = (message, args) => {
     Object.entries(multiplePlayersInfo).forEach((v) => {
         var _a;
         const status = statusSelector(v[1][0].status);
-        message.channel.send(`Gracz ${v[0]} ${status !== null && status !== void 0 ? status : ''}${!!((_a = v[1][0]) === null || _a === void 0 ? void 0 : _a.alliance) ? ` należący do sojuszu ${v[1][0].alliance}` : ''} - znalezione planety (ładowanie może trwać parę sekund):`);
+        message.channel.send(`Gracz ${v[0]} ${status ? `(${status})` : ''}${!!((_a = v[1][0]) === null || _a === void 0 ? void 0 : _a.alliance) ? ` należący do sojuszu ${v[1][0].alliance}` : ''} - znalezione planety (ładowanie może trwać parę sekund):`);
         v[1]
             .map((x) => {
             return new discord_js_1.MessageEmbed({
