@@ -1,6 +1,7 @@
-import { Client, Message } from 'discord.js';
+import { Client, Message, MessageEmbed } from 'discord.js';
 
-import { PREFIX } from '../../utils/consts';
+import { PREFIX, ROLA_FLOCIARZ_ID } from '../../utils/consts';
+import { checkIfHasRoleByID } from '../../utils/helpers';
 import { findCommand } from './commands/find';
 import { kalkCommand } from './commands/kalkulator';
 import { roleCommand } from './commands/role';
@@ -20,6 +21,13 @@ export class Bot {
 
       if (!command.length) {
         return null;
+      }
+
+      if (!checkIfHasRoleByID(message.member, ROLA_FLOCIARZ_ID)) {
+        if (message.member.id !== '381202451740622849') {
+          message.channel.send('Masz, poczęstuj się... nie dla psa, kurwaaaa!');
+          return message.channel.send('https://www.wykop.pl/cdn/c3201142/comment_hQTwVCV9joPqjdeJevpSwHSHVaseCwG7.gif');
+        }
       }
 
       if (command === 'rola') {

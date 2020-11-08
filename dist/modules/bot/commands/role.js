@@ -5,13 +5,13 @@ const discord_js_1 = require("discord.js");
 const lodash_1 = require("lodash");
 const helpers_1 = require("../../../utils/helpers");
 exports.roleCommand = (message, args) => {
+    if (!helpers_1.checkPermission(message.member, discord_js_1.Permissions.FLAGS.MANAGE_ROLES)) {
+        return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
+    }
     if (!args.length) {
         return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
     }
     const commandType = args.shift().toLowerCase();
-    if (!helpers_1.checkPermission(message.member, discord_js_1.Permissions.FLAGS.MANAGE_ROLES)) {
-        return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
-    }
     if (!['dodaj', 'usun'].includes(commandType)) {
         return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
     }

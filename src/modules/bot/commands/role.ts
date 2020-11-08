@@ -4,15 +4,15 @@ import { measureMemory } from 'vm';
 import { checkPermission } from '../../../utils/helpers';
 
 export const roleCommand = (message: Message, args: string[]) => {
+  if (!checkPermission(message.member, Permissions.FLAGS.MANAGE_ROLES)) {
+    return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
+  }
+  
   if (!args.length) {
     return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
   }
 
   const commandType = args.shift().toLowerCase();
-
-  if (!checkPermission(message.member, Permissions.FLAGS.MANAGE_ROLES)) {
-    return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
-  }
 
   if (!['dodaj', 'usun'].includes(commandType)) {
     return message.channel.send(`Nieprawidłowa komenda! Wpisz !rola <dodaj/usun> <nicki_uzytkownikow> <nazwa_roli>`);
@@ -23,6 +23,7 @@ export const roleCommand = (message: Message, args: string[]) => {
   if (!mentions) {
     return message.channel.send(`Musisz podać użytkowników którym chcesz dodać / usunąć role!`);
   }
+
 
   message.mentions.users.forEach((v: User) => {
     const index = args.findIndex((arg) => arg.includes(v.id));
@@ -69,3 +70,5 @@ const removeRoleForMember = (guildMember: GuildMember, role: Role, message: Mess
   guildMember.roles.remove(role);
   return message.channel.send(`Rola ${role.name} usunięta użytkownikowi ${guildMember.user.username}`);
 };
+
+
