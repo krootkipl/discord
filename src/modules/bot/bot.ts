@@ -6,7 +6,7 @@ import { kalkCommand } from './commands/kalkulator';
 import { roleCommand } from './commands/role';
 
 export class Bot {
-  public listen(): void {
+  public listen() {
     const client = new Client();
     const myClient = new MyClient(client);
 
@@ -18,16 +18,20 @@ export class Bot {
       const args = message.content.slice(PREFIX.length).trim().split(' ');
       const command = args.shift().toLowerCase();
 
+      if (!command.length) {
+        return null;
+      }
+
       if (command === 'rola') {
         return roleCommand(message, args);
         // } else if {
         //   command === 'ban'
       } else if (command === 'kalkulator') {
-        return kalkCommand(message);
+        kalkCommand(message);
       } else if (command === 'znajdz') {
-        return findCommand(message, args);
+        findCommand(message, args);
       } else {
-        return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
+        message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
       }
     });
 

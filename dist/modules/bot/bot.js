@@ -16,19 +16,22 @@ class Bot {
                 return;
             const args = message.content.slice(consts_1.PREFIX.length).trim().split(' ');
             const command = args.shift().toLowerCase();
+            if (!command.length) {
+                return null;
+            }
             if (command === 'rola') {
                 return role_1.roleCommand(message, args);
                 // } else if {
                 //   command === 'ban'
             }
             else if (command === 'kalkulator') {
-                return kalkulator_1.kalkCommand(message);
+                kalkulator_1.kalkCommand(message);
             }
             else if (command === 'znajdz') {
-                return find_1.findCommand(message, args);
+                find_1.findCommand(message, args);
             }
             else {
-                return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
+                message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
             }
         });
         myClient._login();
