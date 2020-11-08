@@ -18,10 +18,6 @@ interface DisplayPlayerInfo {
 }
 
 export const findCommand = (message: Message, args: string[]) => {
-  if (!checkPermission(message.member, Permissions.FLAGS.MANAGE_ROLES)) {
-    return message.channel.send(`Nie masz uprawnień do zarządzania rolami!`);
-  }
-
   if (!args.length) {
     return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>`);
   }
