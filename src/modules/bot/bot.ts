@@ -1,6 +1,6 @@
 import { Client, Message, MessageEmbed } from 'discord.js';
 
-import { PREFIX, ROLA_FLOCIARZ_ID } from '../../utils/consts';
+import { BOT_CHANNEL_ID, PREFIX, ROLA_FLOCIARZ_ID } from '../../utils/consts';
 import { checkIfHasRoleByID } from '../../utils/helpers';
 import { findCommand } from './commands/find';
 import { kalkCommand } from './commands/kalkulator';
@@ -14,6 +14,10 @@ export class Bot {
     myClient._ready();
 
     client.on('message', (message: Message) => {
+      if (message.channel.id !== '774794913559740436') {
+        return message.channel.send('BZZZT... Nie działam na tym kanale!');
+      }
+
       if (!message.content.startsWith(PREFIX) || message.author.bot) return;
 
       const args = message.content.slice(PREFIX.length).trim().split(' ');
@@ -24,7 +28,7 @@ export class Bot {
       }
 
       if (!checkIfHasRoleByID(message.member, ROLA_FLOCIARZ_ID)) {
-        if (message.member.id !== '381202451740622849') {
+        if (message.member.id !== BOT_CHANNEL_ID) {
           message.channel.send('Masz, poczęstuj się... nie dla psa, kurwaaaa!');
           return message.channel.send('https://www.wykop.pl/cdn/c3201142/comment_hQTwVCV9joPqjdeJevpSwHSHVaseCwG7.gif');
         }
