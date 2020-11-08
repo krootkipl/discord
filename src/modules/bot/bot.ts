@@ -17,9 +17,8 @@ export class Bot {
       if (!message.content.startsWith(PREFIX) || message.author.bot) return;
 
       if (message.channel.id !== '774794913559740436') {
-        return message.channel.send('BZZZT... Nie działam na tym kanale!');
+        return null;
       }
-
 
       const args = message.content.slice(PREFIX.length).trim().split(' ');
       const command = args.shift().toLowerCase();
@@ -37,8 +36,6 @@ export class Bot {
 
       if (command === 'rola') {
         return roleCommand(message, args);
-        // } else if {
-        //   command === 'ban'
       } else if (command === 'kalkulator') {
         kalkCommand(message);
       } else if (command === 'znajdz') {
