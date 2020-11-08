@@ -15,12 +15,15 @@ class Bot {
         client.on('message', (message) => {
             if (!message.content.startsWith(consts_1.PREFIX) || message.author.bot)
                 return;
-            if (message.channel.id !== '774794913559740436') {
-                return null;
-            }
             const args = message.content.slice(consts_1.PREFIX.length).trim().split(' ');
             const command = args.shift().toLowerCase();
             if (!command.length) {
+                return null;
+            }
+            if (command === 'kalkulator') {
+                kalkulator_1.kalkCommand(message);
+            }
+            if (message.channel.id !== '774794913559740436') {
                 return null;
             }
             if (!helpers_1.checkIfHasRoleByID(message.member, consts_1.ROLA_FLOCIARZ_ID)) {
@@ -32,15 +35,10 @@ class Bot {
             if (command === 'rola') {
                 return role_1.roleCommand(message, args);
             }
-            else if (command === 'kalkulator') {
-                kalkulator_1.kalkCommand(message);
-            }
-            else if (command === 'znajdz') {
+            if (command === 'znajdz') {
                 find_1.findCommand(message, args);
             }
-            else {
-                message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
-            }
+            return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
         });
         myClient._login();
     }

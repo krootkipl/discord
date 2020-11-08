@@ -16,14 +16,18 @@ export class Bot {
     client.on('message', (message: Message) => {
       if (!message.content.startsWith(PREFIX) || message.author.bot) return;
 
-      if (message.channel.id !== '774794913559740436') {
-        return null;
-      }
-
       const args = message.content.slice(PREFIX.length).trim().split(' ');
       const command = args.shift().toLowerCase();
 
       if (!command.length) {
+        return null;
+      }
+
+      if (command === 'kalkulator') {
+        kalkCommand(message);
+      }
+
+      if (message.channel.id !== '774794913559740436') {
         return null;
       }
 
@@ -36,13 +40,13 @@ export class Bot {
 
       if (command === 'rola') {
         return roleCommand(message, args);
-      } else if (command === 'kalkulator') {
-        kalkCommand(message);
-      } else if (command === 'znajdz') {
-        findCommand(message, args);
-      } else {
-        message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
       }
+
+      if (command === 'znajdz') {
+        findCommand(message, args);
+      }
+
+      return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
     });
 
     myClient._login();
