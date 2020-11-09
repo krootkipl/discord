@@ -21,7 +21,7 @@ class Bot {
                 return null;
             }
             if (command === 'kalkulator') {
-                kalkulator_1.kalkCommand(message);
+                return kalkulator_1.kalkCommand(message);
             }
             if (message.channel.id !== '774794913559740436') {
                 return null;
@@ -36,7 +36,7 @@ class Bot {
                 return role_1.roleCommand(message, args);
             }
             if (command === 'znajdz') {
-                find_1.findCommand(message, args);
+                return find_1.findCommand(message, args);
             }
             return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
         });
