@@ -97,7 +97,7 @@ const _findPlayersByAlliance = (message, args) => {
         const _alliance = v['Sojusz'];
         return lodash_1.trim(lodash_1.toLower(_alliance)).includes(lodash_1.trim(lodash_1.toLower(alliance)));
     })
-        .map((v) => v['Gracz'])).join(', ');
+        .map((v) => v['Gracz'])).sort().join(', ');
     if (!alliedPlayers.length) {
         return message.channel.send('Nie znalezionio takiego sojuszu!');
     }
