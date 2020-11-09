@@ -20,7 +20,7 @@ interface DisplayPlayerInfo {
 export const findCommand = (message: Message, args: string[]) => {
   if (!args.length) {
     return message.channel.send(
-      `Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)`
+      `Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)\n-k > parametr do szukania graczy po nazwie sojuszu (np. !znajdz co5g -s) - ważne! należy wpisać nazwę taką jak w widoku galaktyki!`
     );
   }
 
@@ -137,7 +137,7 @@ const _findPlanetsByCordinates = (message: Message, args: string[]) => {
 const _findPlayersByAlliance = (message: Message, args: string[]) => {
   const alliance = args[0];
 
-  const alliedPlayersPlanets = uniq(
+  const alliedPlayers = uniq(
     atlas
       .filter((v) => {
         if (!v.hasOwnProperty('Sojusz')) {
@@ -151,7 +151,11 @@ const _findPlayersByAlliance = (message: Message, args: string[]) => {
       .map((v) => v['Gracz'])
   ).join(', ');
 
-  return message.channel.send(alliedPlayersPlanets);
+  if (!alliedPlayers.length) {
+    return message.channel.send('Nie znalezionio takiego sojuszu!')
+  }
+
+  return message.channel.send(alliedPlayers);
 };
 
 const statusSelector = (status: string) => {

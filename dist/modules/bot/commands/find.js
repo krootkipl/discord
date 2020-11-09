@@ -6,7 +6,7 @@ const lodash_1 = require("lodash");
 const atlas = require('../../../../resources/atlas.json');
 exports.findCommand = (message, args) => {
     if (!args.length) {
-        return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)`);
+        return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)\n-k > parametr do szukania graczy po nazwie sojuszu (np. !znajdz co5g -s) - ważne! należy wpisać nazwę taką jak w widoku galaktyki!`);
     }
     if (args.includes('-k')) {
         return _findPlanetsByCordinates(message, args);
@@ -89,7 +89,7 @@ const _findPlanetsByCordinates = (message, args) => {
 };
 const _findPlayersByAlliance = (message, args) => {
     const alliance = args[0];
-    const alliedPlayersPlanets = lodash_1.uniq(atlas
+    const alliedPlayers = lodash_1.uniq(atlas
         .filter((v) => {
         if (!v.hasOwnProperty('Sojusz')) {
             return false;
@@ -98,7 +98,10 @@ const _findPlayersByAlliance = (message, args) => {
         return lodash_1.trim(lodash_1.toLower(_alliance)).includes(lodash_1.trim(lodash_1.toLower(alliance)));
     })
         .map((v) => v['Gracz'])).join(', ');
-    return message.channel.send(alliedPlayersPlanets);
+    if (!alliedPlayers.length) {
+        return message.channel.send('Nie znalezionio takiego sojuszu!');
+    }
+    return message.channel.send(alliedPlayers);
 };
 const statusSelector = (status) => {
     switch (status) {
