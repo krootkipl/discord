@@ -6,12 +6,18 @@ const lodash_1 = require("lodash");
 const atlas = require('../../../../resources/atlas.json');
 exports.findCommand = (message, args) => {
     if (!args.length) {
-        return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>`);
+        return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)`);
+    }
+    if (args.includes('-k')) {
+        return _findPlanetsByCordinates(message, args);
     }
     if (args[0].length < 3) {
         return message.channel.send(`Wpisz przynajmniej 3 znaki nicku gracza!`);
     }
     const player = args[0];
+    return _findPlanetsByPlayerName(message, player);
+};
+const _findPlanetsByPlayerName = (message, player) => {
     const fullPlayersInfo = atlas.filter((v) => {
         if (v.hasOwnProperty('Gracz')) {
             const name = v === null || v === void 0 ? void 0 : v['Gracz'];
@@ -25,20 +31,22 @@ exports.findCommand = (message, args) => {
         return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
     }
     const displayPlayerInfo = fullPlayersInfo.map((v) => {
+        let planetName = v['Planeta / Nazwa (Aktywność)'];
+        planetName = planetName.replace(planetName.match(/\((.*?)\)/g)[0], '');
         return {
+            gal: v['Gal'],
+            sys: v['System'],
+            pos: v['Pos'],
             player: v['Gracz'],
             status: v['Status'],
-            system: v['Gal'],
-            gal: v['System'],
-            pos: v['Pos'],
-            planet: v['Planeta / Nazwa (Aktywność)'],
+            planet: planetName,
             alliance: v['Sojusz'],
             rank: v['Pozycja'],
             moon: v['Księżyc'],
         };
     });
-    if (displayPlayerInfo.length > 30) {
-        return message.channel.send(`Wpisz dokładniejszy nick, znalazłem ponad 30 wyników! Nie chcemy zaśmiecać chatu, prawda? :D`);
+    if (displayPlayerInfo.length > 20) {
+        return message.channel.send(`Wpisz dokładniejszy nick, znalazłem ponad 20 wyników! Nie chcemy zaśmiecać chatu, prawda? :D`);
     }
     const multiplePlayersInfo = {};
     displayPlayerInfo.forEach((v) => {
@@ -49,21 +57,38 @@ exports.findCommand = (message, args) => {
             multiplePlayersInfo[v.player].push(v);
         }
     });
-    Object.entries(multiplePlayersInfo).forEach((v) => {
-        var _a;
-        const status = statusSelector(v[1][0].status);
-        message.channel.send(`Gracz ${v[0]} ${status ? `(${status})` : ''}${!!((_a = v[1][0]) === null || _a === void 0 ? void 0 : _a.alliance) ? ` należący do sojuszu ${v[1][0].alliance}` : ''} - znalezione planety (ładowanie może trwać parę sekund):`);
-        v[1]
-            .map((x) => {
-            return new discord_js_1.MessageEmbed({
-                title: `${x.gal}:${x.system}:${x.pos} - ${x.planet}`,
-                url: `https://mirkogame.pl/game.php?page=galaxy&galaxy=${x.gal}&system=${x.system})`,
-                description: `${!!x.moon ? `Przy planecie znajduje się księżyc: ${x.moon}` : ''}`,
-            });
-        })
+    for (let [nick, data] of Object.entries(multiplePlayersInfo)) {
+        const firstElm = data[0];
+        const statusInfo = statusSelector(firstElm.status);
+        message.channel.send(`Gracz ${nick}${statusInfo ? ` (${statusInfo})` : ''}${!!(firstElm === null || firstElm === void 0 ? void 0 : firstElm.alliance) ? ` należący do sojuszu ${firstElm.alliance}` : ''} - znalezione planety (ładowanie może trwać parę sekund):`);
+        data
+            .map((x) => new discord_js_1.MessageEmbed({
+            title: `${x.gal}:${x.sys}:${x.pos} - ${x.planet}`,
+            url: `https://mirkogame.pl/game.php?page=galaxy&galaxy=${x.gal}&system=${x.sys})`,
+            description: `${!!x.moon ? `Przy planecie znajduje się księżyc: ${x.moon}` : ''}`,
+        }))
             .forEach((x) => message.channel.send(x));
-    });
+    }
     return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 06.11.2020');
+};
+const _findPlanetsByCordinates = (message, args) => {
+    let coordinates = args.find((v) => v.match(/\[*[1-4]:[0-9]{1,3}:[0-9]{1,2}\]*/));
+    if (!coordinates) {
+        return message.channel.send('Koordynaty wpisane niepoprawnie! Przykłady => 1:2:3, [4:200:3]');
+    }
+    coordinates = coordinates.replace('[', '');
+    coordinates = coordinates.replace(']', '');
+    const splittedCoordinates = coordinates.split(':');
+    const position = {
+        gal: splittedCoordinates[0],
+        sys: splittedCoordinates[1],
+        pos: splittedCoordinates[2],
+    };
+    const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['Gal']) === position.gal && String(v === null || v === void 0 ? void 0 : v['System']) === position.sys && String(v === null || v === void 0 ? void 0 : v['Pos']) === position.pos);
+    if (!foundPlanet || !(foundPlanet === null || foundPlanet === void 0 ? void 0 : foundPlanet['Gracz'].length)) {
+        return message.channel.send('Nie znaleziono planety na podanych koordynatach!');
+    }
+    return _findPlanetsByPlayerName(message, foundPlanet['Gracz']);
 };
 const statusSelector = (status) => {
     switch (status) {
