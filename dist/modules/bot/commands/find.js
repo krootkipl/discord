@@ -31,15 +31,13 @@ const _findPlanetsByPlayerName = (message, player) => {
         return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
     }
     const displayPlayerInfo = fullPlayersInfo.map((v) => {
-        let planetName = v['Planeta / Nazwa (Aktywność)'];
-        planetName = planetName.replace(planetName.match(/\((.*?)\)/g)[0], '');
         return {
             gal: v['Gal'],
             sys: v['System'],
             pos: v['Pos'],
             player: v['Gracz'],
             status: v['Status'],
-            planet: planetName,
+            planet: v['Planeta / Nazwa (Aktywność)'],
             alliance: v['Sojusz'],
             rank: v['Pozycja'],
             moon: v['Księżyc'],

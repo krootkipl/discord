@@ -19,7 +19,9 @@ interface DisplayPlayerInfo {
 
 export const findCommand = (message: Message, args: string[]) => {
   if (!args.length) {
-    return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)`);
+    return message.channel.send(
+      `Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)`
+    );
   }
 
   if (args.includes('-k')) {
@@ -52,16 +54,13 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
   }
 
   const displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
-    let planetName: string = v['Planeta / Nazwa (Aktywność)'];
-    planetName = planetName.replace(planetName.match(/\((.*?)\)/g)[0], '');
-
     return {
       gal: v['Gal'],
       sys: v['System'],
       pos: v['Pos'],
       player: v['Gracz'],
       status: v['Status'],
-      planet: planetName,
+      planet: v['Planeta / Nazwa (Aktywność)'],
       alliance: v['Sojusz'],
       rank: v['Pozycja'],
       moon: v['Księżyc'],
