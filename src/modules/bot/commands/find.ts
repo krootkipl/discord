@@ -1,6 +1,6 @@
 import { MessageEmbed, Permissions } from 'discord.js';
 import { Message } from 'discord.js';
-import { find, toLower, trim } from 'lodash';
+import { find, toLower, trim, uniq } from 'lodash';
 import { checkPermission } from '../../../utils/helpers';
 
 const atlas: Object[] = require('../../../../resources/atlas.json');
@@ -28,24 +28,23 @@ export const findCommand = (message: Message, args: string[]) => {
     return _findPlanetsByCordinates(message, args);
   }
 
-  if (args[0].length < 3) {
-    return message.channel.send(`Wpisz przynajmniej 3 znaki nicku gracza!`);
+  if (args.includes('-s')) {
+    return _findPlayersByAlliance(message, args);
   }
 
-  const player = args[0];
-
-  return _findPlanetsByPlayerName(message, player);
+  return _findPlanetsByPlayerName(message, args[0]);
 };
 
 const _findPlanetsByPlayerName = (message: Message, player: string) => {
+  if (player.length < 3) {
+    return message.channel.send(`Wpisz przynajmniej 3 znaki nicku gracza!`);
+  }
+
   const fullPlayersInfo = atlas.filter((v) => {
     if (v.hasOwnProperty('Gracz')) {
       const name = v?.['Gracz'];
-      if (typeof name === 'string') {
-        return trim(toLower(name)).includes(trim(toLower(player)));
-      }
 
-      return false;
+      return typeof name === 'string' ? trim(toLower(name)).includes(trim(toLower(player))) : false;
     }
   });
 
@@ -133,6 +132,26 @@ const _findPlanetsByCordinates = (message: Message, args: string[]) => {
   }
 
   return _findPlanetsByPlayerName(message, foundPlanet['Gracz']);
+};
+
+const _findPlayersByAlliance = (message: Message, args: string[]) => {
+  const alliance = args[0];
+
+  const alliedPlayersPlanets = uniq(
+    atlas
+      .filter((v) => {
+        if (!v.hasOwnProperty('Sojusz')) {
+          return false;
+        }
+
+        const _alliance = v['Sojusz'];
+
+        return trim(toLower(_alliance)).includes(trim(toLower(alliance)));
+      })
+      .map((v) => v['Gracz'])
+  ).join(', ');
+
+  return message.channel.send(alliedPlayersPlanets);
 };
 
 const statusSelector = (status: string) => {

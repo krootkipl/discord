@@ -11,20 +11,19 @@ exports.findCommand = (message, args) => {
     if (args.includes('-k')) {
         return _findPlanetsByCordinates(message, args);
     }
-    if (args[0].length < 3) {
-        return message.channel.send(`Wpisz przynajmniej 3 znaki nicku gracza!`);
+    if (args.includes('-s')) {
+        return _findPlayersByAlliance(message, args);
     }
-    const player = args[0];
-    return _findPlanetsByPlayerName(message, player);
+    return _findPlanetsByPlayerName(message, args[0]);
 };
 const _findPlanetsByPlayerName = (message, player) => {
+    if (player.length < 3) {
+        return message.channel.send(`Wpisz przynajmniej 3 znaki nicku gracza!`);
+    }
     const fullPlayersInfo = atlas.filter((v) => {
         if (v.hasOwnProperty('Gracz')) {
             const name = v === null || v === void 0 ? void 0 : v['Gracz'];
-            if (typeof name === 'string') {
-                return lodash_1.trim(lodash_1.toLower(name)).includes(lodash_1.trim(lodash_1.toLower(player)));
-            }
-            return false;
+            return typeof name === 'string' ? lodash_1.trim(lodash_1.toLower(name)).includes(lodash_1.trim(lodash_1.toLower(player))) : false;
         }
     });
     if (!fullPlayersInfo.length) {
@@ -87,6 +86,19 @@ const _findPlanetsByCordinates = (message, args) => {
         return message.channel.send('Nie znaleziono planety na podanych koordynatach!');
     }
     return _findPlanetsByPlayerName(message, foundPlanet['Gracz']);
+};
+const _findPlayersByAlliance = (message, args) => {
+    const alliance = args[0];
+    const alliedPlayersPlanets = lodash_1.uniq(atlas
+        .filter((v) => {
+        if (!v.hasOwnProperty('Sojusz')) {
+            return false;
+        }
+        const _alliance = v['Sojusz'];
+        return lodash_1.trim(lodash_1.toLower(_alliance)).includes(lodash_1.trim(lodash_1.toLower(alliance)));
+    })
+        .map((v) => v['Gracz'])).join(', ');
+    return message.channel.send(alliedPlayersPlanets);
 };
 const statusSelector = (status) => {
     switch (status) {
