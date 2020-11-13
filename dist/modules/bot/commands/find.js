@@ -31,15 +31,15 @@ const _findPlanetsByPlayerName = (message, player) => {
     }
     const displayPlayerInfo = fullPlayersInfo.map((v) => {
         return {
-            gal: v['Gal'],
-            sys: v['System'],
-            pos: v['Pos'],
+            gal: v['G'],
+            sys: v['U'],
+            pos: v['P'],
             player: v['Gracz'],
             status: v['Status'],
-            planet: v['Planeta / Nazwa (Aktywność)'],
-            alliance: v['Sojusz'],
-            rank: v['Pozycja'],
-            moon: v['Księżyc'],
+            planet: v['Nazwa'],
+            alliance: v !== '-' ? v['Sojusz'] : '',
+            rank: v['Ranking'],
+            moon: v['Moon'],
         };
     });
     if (displayPlayerInfo.length > 20) {
@@ -81,7 +81,7 @@ const _findPlanetsByCordinates = (message, args) => {
         sys: splittedCoordinates[1],
         pos: splittedCoordinates[2],
     };
-    const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['Gal']) === position.gal && String(v === null || v === void 0 ? void 0 : v['System']) === position.sys && String(v === null || v === void 0 ? void 0 : v['Pos']) === position.pos);
+    const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['']) === position.gal && String(v === null || v === void 0 ? void 0 : v['U']) === position.sys && String(v === null || v === void 0 ? void 0 : v['P']) === position.pos);
     if (!foundPlanet || !(foundPlanet === null || foundPlanet === void 0 ? void 0 : foundPlanet['Gracz'].length)) {
         return message.channel.send('Nie znaleziono planety na podanych koordynatach!');
     }
@@ -97,7 +97,9 @@ const _findPlayersByAlliance = (message, args) => {
         const _alliance = v['Sojusz'];
         return lodash_1.trim(lodash_1.toLower(_alliance)).includes(lodash_1.trim(lodash_1.toLower(alliance)));
     })
-        .map((v) => v['Gracz'])).sort().join(', ');
+        .map((v) => v['Gracz']))
+        .sort()
+        .join(', ');
     if (!alliedPlayers.length) {
         return message.channel.send('Nie znalezionio takiego sojuszu!');
     }
