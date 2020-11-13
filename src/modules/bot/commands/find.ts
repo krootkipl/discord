@@ -54,15 +54,15 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
   const displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
     return {
-      gal: v['Gal'],
-      sys: v['System'],
-      pos: v['Pos'],
+      gal: v['G'],
+      sys: v['U'],
+      pos: v['P'],
       player: v['Gracz'],
       status: v['Status'],
-      planet: v['Planeta / Nazwa (Aktywność)'],
-      alliance: v['Sojusz'],
-      rank: v['Pozycja'],
-      moon: v['Księżyc'],
+      planet: v['Nazwa'],
+      alliance: v !== '-' ? v['Sojusz'] : '',
+      rank: v['Ranking'],
+      moon: v['Moon'],
     };
   });
 
@@ -124,7 +124,7 @@ const _findPlanetsByCordinates = (message: Message, args: string[]) => {
   };
 
   const foundPlanet = atlas.find(
-    (v) => String(v?.['Gal']) === position.gal && String(v?.['System']) === position.sys && String(v?.['Pos']) === position.pos
+    (v) => String(v?.['']) === position.gal && String(v?.['U']) === position.sys && String(v?.['P']) === position.pos
   );
 
   if (!foundPlanet || !foundPlanet?.['Gracz'].length) {
@@ -149,10 +149,12 @@ const _findPlayersByAlliance = (message: Message, args: string[]) => {
         return trim(toLower(_alliance)).includes(trim(toLower(alliance)));
       })
       .map((v) => v['Gracz'])
-  ).sort().join(', ');
+  )
+    .sort()
+    .join(', ');
 
   if (!alliedPlayers.length) {
-    return message.channel.send('Nie znalezionio takiego sojuszu!')
+    return message.channel.send('Nie znalezionio takiego sojuszu!');
   }
 
   return message.channel.send(alliedPlayers);

@@ -6,6 +6,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@reduxjs/toolkit": "^1.4.0",
     "@types/node": "^14.11.10",
     "discord.js": "^12.3.1",
     "dotenv": "^8.2.0",
@@ -22,6 +23,7 @@
     "build": "tsc --build tsconfig.json"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.162"
+    "@types/lodash": "^4.14.162",
+    "redux-devtools": "^3.7.0"
   }
 }
