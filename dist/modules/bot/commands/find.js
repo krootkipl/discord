@@ -20,7 +20,7 @@ const _findPlanetsByPlayerName = (message, player) => {
     const fullPlayersInfo = atlas.filter((v) => {
         if (v.hasOwnProperty('Gracz')) {
             const name = v === null || v === void 0 ? void 0 : v['Gracz'];
-            return typeof name === 'string' ? lodash_1.trim(lodash_1.toLower(name)).includes(lodash_1.trim(lodash_1.toLower(player))) : false;
+            return typeof name === 'string' ? lodash_1.trim(lodash_1.toLower(name)) === lodash_1.trim(lodash_1.toLower(player)) : false;
         }
     });
     if (!fullPlayersInfo.length) {

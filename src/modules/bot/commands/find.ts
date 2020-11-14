@@ -40,7 +40,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     if (v.hasOwnProperty('Gracz')) {
       const name = v?.['Gracz'];
 
-      return typeof name === 'string' ? trim(toLower(name)).includes(trim(toLower(player))) : false;
+      return typeof name === 'string' ? trim(toLower(name)) === trim(toLower(player)) : false;
     }
   });
 
