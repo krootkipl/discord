@@ -36,10 +36,6 @@ export const findCommand = (message: Message, args: string[]) => {
 };
 
 const _findPlanetsByPlayerName = (message: Message, player: string) => {
-  if (player.length < 3) {
-    return message.channel.send(`Wpisz przynajmniej 3 znaki nicku gracza!`);
-  }
-
   const fullPlayersInfo = atlas.filter((v) => {
     if (v.hasOwnProperty('Gracz')) {
       const name = v?.['Gracz'];
@@ -52,7 +48,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
   }
 
-  const displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
+  let displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
     return {
       gal: v['G'],
       sys: v['U'],
@@ -60,14 +56,19 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
       player: v['Gracz'],
       status: v['Status'],
       planet: v['Nazwa'],
-      alliance: v !== '-' ? v['Sojusz'] : '',
+      alliance: v['Sojusz'] !== '-' ? v['Sojusz'] : '',
       rank: v['Ranking'],
       moon: v['Moon'],
     };
   });
 
   if (displayPlayerInfo.length > 20) {
-    return message.channel.send(`Wpisz dokładniejszy nick, znalazłem ponad 20 wyników! Nie chcemy zaśmiecać chatu, prawda? :D`);
+    if (!displayPlayerInfo.some((v: DisplayPlayerInfo) => v.player === player)) {
+      return message.channel.send(`Wpisz dokładniejszy nick, znalazłem ponad 20 wyników! Nie chcemy zaśmiecać chatu, prawda? :D`);
+    } else {
+      displayPlayerInfo.filter((v: DisplayPlayerInfo) => v.player === player); 
+      message.channel.send(`Znalazłem ponad 20 wyników! Wyświetlę tylko te najtrafniejsze, wpisz dokładniejszy nick!`);
+    }
   }
 
   const multiplePlayersInfo: { [player: string]: DisplayPlayerInfo[] } = {};
