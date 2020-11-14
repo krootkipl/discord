@@ -40,7 +40,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     if (v.hasOwnProperty('Gracz')) {
       const name = v?.['Gracz'];
 
-      return typeof name === 'string' ? trim(toLower(name)).includes(trim(toLower(player))) : false;
+      return typeof name === 'string' ? trim(toLower(name)) === trim(toLower(player)) : false;
     }
   });
 
@@ -66,7 +66,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     if (!displayPlayerInfo.some((v: DisplayPlayerInfo) => v.player === player)) {
       return message.channel.send(`Wpisz dokładniejszy nick, znalazłem ponad 20 wyników! Nie chcemy zaśmiecać chatu, prawda? :D`);
     } else {
-      displayPlayerInfo.filter((v: DisplayPlayerInfo) => v.player === player); 
+      displayPlayerInfo = displayPlayerInfo.filter((v: DisplayPlayerInfo) => v.player === player); 
       message.channel.send(`Znalazłem ponad 20 wyników! Wyświetlę tylko te najtrafniejsze, wpisz dokładniejszy nick!`);
     }
   }
