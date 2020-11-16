@@ -21,6 +21,10 @@ const kalkList: { name: string; url: string }[] = [
     name: 'Kalkulator ataków rakietowych',
     url: 'http://www.toolsforogame.com/misiles/misiles.aspx?idi=en-us',
   },
+  {
+    name: 'Kalkulator prób moonowych',
+    url: 'https://proxyforgame.com/pl/ogame/calc/moon.php'
+  }
 ];
 
 export const kalkCommand = (message: Message) => {
