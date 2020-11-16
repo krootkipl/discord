@@ -6,7 +6,14 @@ const lodash_1 = require("lodash");
 const atlas = require('../../../../resources/atlas.json');
 exports.findCommand = (message, args) => {
     if (!args.length) {
-        return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n-k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)\n-k > parametr do szukania graczy po nazwie sojuszu (np. !znajdz co5g -s) - ważne! należy wpisać nazwę taką jak w widoku galaktyki!`);
+        return message.channel.send(`Nieprawidłowa komenda! Wpisz !znajdz <nick_gracza>\n
+      -k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)\n
+      -s > parametr do szukania graczy po nazwie sojuszu (np. !znajdz co5g -s) - ważne! należy wpisać nazwę taką jak w widoku galaktyki!`);
+    }
+    if (args.includes('-h')) {
+        return message.channel.send(`Wpisz !znajdz <nick_gracza>\n
+    -k > parametr do szukania po koordynatach (np. !znajdz [4:171:6] -k)\n
+    -s > parametr do szukania graczy po nazwie sojuszu (np. !znajdz co5g -s) - ważne! należy wpisać nazwę taką jak w widoku galaktyki!`);
     }
     if (args.includes('-k')) {
         return _findPlanetsByCordinates(message, args);
@@ -14,17 +21,22 @@ exports.findCommand = (message, args) => {
     if (args.includes('-s')) {
         return _findPlayersByAlliance(message, args);
     }
-    return _findPlanetsByPlayerName(message, args[0]);
+    const player = args.filter((v) => v.indexOf('-') !== 0).join('_');
+    return _findPlanetsByPlayerName(message, player);
 };
 const _findPlanetsByPlayerName = (message, player) => {
     const fullPlayersInfo = atlas.filter((v) => {
         if (v.hasOwnProperty('Gracz')) {
-            const name = v === null || v === void 0 ? void 0 : v['Gracz'];
-            return typeof name === 'string' ? lodash_1.trim(lodash_1.toLower(name)) === lodash_1.trim(lodash_1.toLower(player)) : false;
+            let name = v === null || v === void 0 ? void 0 : v['Gracz'];
+            if (typeof name === 'string') {
+                name = name.split(' ').join('_');
+                return lodash_1.trim(lodash_1.toLower(name)) === lodash_1.trim(lodash_1.toLower(player));
+            }
+            return false;
         }
     });
     if (!fullPlayersInfo.length) {
-        return message.channel.send(`Nie znaleziono gracza o nicku ${player}`);
+        return message.channel.send(`Nie znaleziono gracza o nicku ${player}! Aby uzyskać pomoc wpisz !znajdz -h`);
     }
     let displayPlayerInfo = fullPlayersInfo.map((v) => {
         return {
@@ -69,7 +81,7 @@ const _findPlanetsByPlayerName = (message, player) => {
         }))
             .forEach((x) => message.channel.send(x));
     }
-    return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 06.11.2020');
+    return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 10.11.2020');
 };
 const _findPlanetsByCordinates = (message, args) => {
     let coordinates = args.find((v) => v.match(/\[*[1-4]:[0-9]{1,3}:[0-9]{1,2}\]*/));
@@ -84,7 +96,7 @@ const _findPlanetsByCordinates = (message, args) => {
         sys: splittedCoordinates[1],
         pos: splittedCoordinates[2],
     };
-    const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['']) === position.gal && String(v === null || v === void 0 ? void 0 : v['U']) === position.sys && String(v === null || v === void 0 ? void 0 : v['P']) === position.pos);
+    const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['G']) === position.gal && String(v === null || v === void 0 ? void 0 : v['U']) === position.sys && String(v === null || v === void 0 ? void 0 : v['P']) === position.pos);
     if (!foundPlanet || !(foundPlanet === null || foundPlanet === void 0 ? void 0 : foundPlanet['Gracz'].length)) {
         return message.channel.send('Nie znaleziono planety na podanych koordynatach!');
     }
