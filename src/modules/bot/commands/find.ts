@@ -1,4 +1,4 @@
-import { MessageEmbed, Permissions } from 'discord.js';
+import { EmbedFieldData, MessageEmbed, Permissions } from 'discord.js';
 import { Message } from 'discord.js';
 import { find, toLower, trim, uniq } from 'lodash';
 import { checkPermission } from '../../../utils/helpers';
@@ -101,25 +101,30 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     const firstElm = data[0];
     const statusInfo = statusSelector(firstElm.status);
 
-    message.channel.send(
-      `Gracz ${nick}${statusInfo ? ` (${statusInfo})` : ''}${
-        !!firstElm?.alliance ? ` należący do sojuszu ${firstElm.alliance}` : ''
-      } - znalezione planety (ładowanie może trwać parę sekund):`
-    );
+    const playerEmbed = new MessageEmbed();
 
-    data
-      .map(
-        (x: DisplayPlayerInfo) =>
-          new MessageEmbed({
-            title: `${x.gal}:${x.sys}:${x.pos} - ${x.planet}`,
-            url: `https://mirkogame.pl/game.php?page=galaxy&galaxy=${x.gal}&system=${x.sys})`,
-            description: `${!!x.moon ? `Przy planecie znajduje się księżyc: ${x.moon}` : ''}`,
-          })
-      )
-      .forEach((x: MessageEmbed) => message.channel.send(x));
+    playerEmbed.setTitle(`${nick}`);
+    playerEmbed.setDescription(`${!!firstElm?.alliance ? `Sojusz ${firstElm.alliance}` : ''}`);
+
+    const fields = data.map<EmbedFieldData>((v: DisplayPlayerInfo) => {
+      return {
+        name: v.planet,
+        value: `[${v.gal}:${v.sys}:${v.pos}](https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.sys})\
+          [Skanuj 10 sondami](https://mirkogame.pl/game.php?page=fleetTable&galaxy=${v.gal}&system=${v.sys}&planet=${v.planet}&planettype=1&target_mission=1&ship[210]=10)
+        `,
+        inline: true,
+      };
+    });
+
+    playerEmbed.addFields(fields);
+    playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 10.11.2020`);
+
+    if (nick === 'dznwl') {
+      playerEmbed.setImage(`https://media.giphy.com/media/13OYNXi0uTM6vS/giphy.gif`);
+    }
+
+    message.channel.send(playerEmbed);
   }
-
-  return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 10.11.2020');
 };
 
 const _findPlanetsByCordinates = (message: Message, args: string[]) => {
