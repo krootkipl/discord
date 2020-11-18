@@ -72,16 +72,25 @@ const _findPlanetsByPlayerName = (message, player) => {
     for (let [nick, data] of Object.entries(multiplePlayersInfo)) {
         const firstElm = data[0];
         const statusInfo = statusSelector(firstElm.status);
-        message.channel.send(`Gracz ${nick}${statusInfo ? ` (${statusInfo})` : ''}${!!(firstElm === null || firstElm === void 0 ? void 0 : firstElm.alliance) ? ` należący do sojuszu ${firstElm.alliance}` : ''} - znalezione planety (ładowanie może trwać parę sekund):`);
-        data
-            .map((x) => new discord_js_1.MessageEmbed({
-            title: `${x.gal}:${x.sys}:${x.pos} - ${x.planet}`,
-            url: `https://mirkogame.pl/game.php?page=galaxy&galaxy=${x.gal}&system=${x.sys})`,
-            description: `${!!x.moon ? `Przy planecie znajduje się księżyc: ${x.moon}` : ''}`,
-        }))
-            .forEach((x) => message.channel.send(x));
+        const playerEmbed = new discord_js_1.MessageEmbed();
+        playerEmbed.setTitle(`${nick}`);
+        playerEmbed.setDescription(`${!!(firstElm === null || firstElm === void 0 ? void 0 : firstElm.alliance) ? `Sojusz ${firstElm.alliance}` : ''}`);
+        const fields = data.map((v) => {
+            return {
+                name: v.planet,
+                value: `[${v.gal}:${v.sys}:${v.pos}](https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.sys})\
+          [Skanuj 10 sondami](https://mirkogame.pl/game.php?page=fleetTable&galaxy=${v.gal}&system=${v.sys}&planet=${v.planet}&planettype=1&target_mission=1&ship[210]=10)
+        `,
+                inline: true,
+            };
+        });
+        playerEmbed.addFields(fields);
+        playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 10.11.2020`);
+        if (nick === 'dznwl') {
+            playerEmbed.setImage(`https://media.giphy.com/media/13OYNXi0uTM6vS/giphy.gif`);
+        }
+        message.channel.send(playerEmbed);
     }
-    return message.channel.send('Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 10.11.2020');
 };
 const _findPlanetsByCordinates = (message, args) => {
     let coordinates = args.find((v) => v.match(/\[*[1-4]:[0-9]{1,3}:[0-9]{1,2}\]*/));
