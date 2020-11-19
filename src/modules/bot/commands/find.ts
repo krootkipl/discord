@@ -113,7 +113,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
         [${v.gal}:${v.sys}:${v.pos}](https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.sys})
           [Skanuj 10 sondami](https://mirkogame.pl/game.php?page=fleetTable&galaxy=${v.gal}&system=${v.sys}&planet=${
           v.pos
-        }&planettype=1&target_mission=1&ship[210]=10)
+        }&planettype=1&target_mission=6&ship[210]=10)
         `,
         inline: true,
       };
