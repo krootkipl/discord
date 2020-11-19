@@ -126,6 +126,10 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
       playerEmbed.setImage(`https://media.giphy.com/media/13OYNXi0uTM6vS/giphy.gif`);
     }
 
+    if (nick === 'WirujoncyHooy') {
+      playerEmbed.setImage(`https://www.wykop.pl/cdn/c3201142/comment_15995607238c7XuG6Y2HL1f9cSjI4FD6.jpg`);
+    }
+
     message.channel.send(playerEmbed);
   }
 };
