@@ -130,6 +130,10 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
       playerEmbed.setImage(`https://www.wykop.pl/cdn/c3201142/comment_15995607238c7XuG6Y2HL1f9cSjI4FD6.jpg`);
     }
 
+    if (nick === 'mhrok') {
+      playerEmbed.setImage(`https://cdn.discordapp.com/attachments/774794913559740436/779385553283317770/unknown.png`);
+    }
+
     message.channel.send(playerEmbed);
   }
 };
