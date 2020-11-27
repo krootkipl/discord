@@ -26,8 +26,8 @@ exports.findCommand = (message, args) => {
 };
 const _findPlanetsByPlayerName = (message, player) => {
     const fullPlayersInfo = atlas.filter((v) => {
-        if (v.hasOwnProperty('Gracz')) {
-            let name = v === null || v === void 0 ? void 0 : v['Gracz'];
+        if (v.hasOwnProperty('Gracz (Status)')) {
+            let name = cutValueFromHyperlink(String(v === null || v === void 0 ? void 0 : v['Gracz (Status)']));
             if (typeof name === 'string') {
                 name = name.split(' ').join('_');
                 return lodash_1.trim(lodash_1.toLower(name)) === lodash_1.trim(lodash_1.toLower(player));
@@ -39,16 +39,20 @@ const _findPlanetsByPlayerName = (message, player) => {
         return message.channel.send(`Nie znaleziono gracza o nicku ${player}! Aby uzyskać pomoc wpisz !znajdz -h`);
     }
     let displayPlayerInfo = fullPlayersInfo.map((v) => {
+        const posString = String(v['Pos']);
         return {
-            gal: v['G'],
-            sys: v['U'],
-            pos: v['P'],
-            player: v['Gracz'],
+            gal: v['System'],
+            sys: v['Galaktyka'],
+            pos: Number(cutValueFromHyperlink(posString)),
+            player: cutValueFromHyperlink(v['Gracz (Status)']),
             status: v['Status'],
-            planet: v['Nazwa'],
+            planet: cutActivityFromPlanetName(v['Nazwa (Aktywność)']),
             alliance: v['Sojusz'] !== '-' ? v['Sojusz'] : '',
             rank: v['Ranking'],
-            moon: v['Moon'],
+            moon: v['Księżyc'],
+            planetLink: cutHyperlink(posString),
+            spyLink: cutHyperlink(v['Akcja']),
+            playerLink: cutHyperlink(v['Gracz (Status)']),
         };
     });
     if (displayPlayerInfo.length > 20) {
@@ -74,19 +78,18 @@ const _findPlanetsByPlayerName = (message, player) => {
         const statusInfo = statusSelector(firstElm.status);
         const playerEmbed = new discord_js_1.MessageEmbed();
         playerEmbed.setTitle(`${nick}`);
-        playerEmbed.setDescription(`${!!(firstElm === null || firstElm === void 0 ? void 0 : firstElm.alliance) ? `Sojusz ${firstElm.alliance}` : ''}`);
+        playerEmbed.setDescription(`${!!(firstElm === null || firstElm === void 0 ? void 0 : firstElm.alliance) ? `Sojusz ${firstElm.alliance}` : ''} [Karta gracza](${firstElm.playerLink})`);
         const fields = data.map((v) => {
             return {
                 name: v.planet,
                 value: `${!!v.moon ? `Księżyc: ${v.moon}` : ''}\n
-        [${v.gal}:${v.sys}:${v.pos}](https://mirkogame.pl/game.php?page=galaxy&galaxy=${v.gal}&system=${v.sys})
-          [Skanuj 10 sondami](https://mirkogame.pl/game.php?page=fleetTable&galaxy=${v.gal}&system=${v.sys}&planet=${v.pos}&planettype=1&target_mission=6&ship[210]=10)
-        `,
+        [${v.gal}:${v.sys}:${v.pos}](${v.planetLink})
+        [Szpieguj](${v.spyLink})`,
                 inline: true,
             };
         });
         playerEmbed.addFields(fields);
-        playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 10.11.2020`);
+        playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 26.11.2020`);
         if (nick === 'dznwl') {
             playerEmbed.setImage(`https://media.giphy.com/media/13OYNXi0uTM6vS/giphy.gif`);
         }
@@ -112,23 +115,25 @@ const _findPlanetsByCordinates = (message, args) => {
         sys: splittedCoordinates[1],
         pos: splittedCoordinates[2],
     };
-    const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['G']) === position.gal && String(v === null || v === void 0 ? void 0 : v['U']) === position.sys && String(v === null || v === void 0 ? void 0 : v['P']) === position.pos);
-    if (!foundPlanet || !(foundPlanet === null || foundPlanet === void 0 ? void 0 : foundPlanet['Gracz'].length)) {
+    const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['System']) === position.gal &&
+        String(v === null || v === void 0 ? void 0 : v['Galaktyka']) === position.sys &&
+        cutValueFromHyperlink(v === null || v === void 0 ? void 0 : v['Pos']) === position.pos);
+    if (!foundPlanet || !(foundPlanet === null || foundPlanet === void 0 ? void 0 : foundPlanet['Gracz (Status)'].length)) {
         return message.channel.send('Nie znaleziono planety na podanych koordynatach!');
     }
-    return _findPlanetsByPlayerName(message, foundPlanet['Gracz']);
+    return _findPlanetsByPlayerName(message, cutValueFromHyperlink(foundPlanet['Gracz (Status)']));
 };
 const _findPlayersByAlliance = (message, args) => {
     const alliance = args[0];
     const alliedPlayers = lodash_1.uniq(atlas
         .filter((v) => {
-        if (!v.hasOwnProperty('Sojusz')) {
+        if (!v.hasOwnProperty('Sojusz') || v['Sojusz'] === '-') {
             return false;
         }
         const _alliance = v['Sojusz'];
         return lodash_1.trim(lodash_1.toLower(_alliance)).includes(lodash_1.trim(lodash_1.toLower(alliance)));
     })
-        .map((v) => v['Gracz']))
+        .map((v) => cutValueFromHyperlink(v['Gracz (Status)'])))
         .sort()
         .join(', ');
     if (!alliedPlayers.length) {
@@ -148,4 +153,15 @@ const statusSelector = (status) => {
             return null;
     }
 };
+const cutValueFromHyperlink = (link) => {
+    let value = link.substring(link.indexOf(';') + 1, link.length - 1).trim();
+    return value.substr(1, value.length - 2);
+};
+const cutActivityFromPlanetName = (name) => {
+    if (name.indexOf('(') > -1) {
+        return name.substring(0, name.indexOf('(') - 1);
+    }
+    return name;
+};
+const cutHyperlink = (link) => link.substring(link.indexOf('(') + 3, link.indexOf(';') - 1);
 //# sourceMappingURL=find.js.map
