@@ -44,15 +44,15 @@ const _findPlanetsByPlayerName = (message, player) => {
             gal: v['System'],
             sys: v['Galaktyka'],
             pos: Number(cutValueFromHyperlink(posString)),
-            player: cutValueFromHyperlink(v['Gracz (Status)']),
+            player: cutValueFromHyperlink(String(v['Gracz (Status)'])),
             status: v['Status'],
-            planet: cutActivityFromPlanetName(v['Nazwa (Aktywność)']),
+            planet: cutActivityFromPlanetName(String(v['Nazwa (Aktywność)'])),
             alliance: v['Sojusz'] !== '-' ? v['Sojusz'] : '',
             rank: v['Ranking'],
             moon: v['Księżyc'],
             planetLink: cutHyperlink(posString),
-            spyLink: cutHyperlink(v['Akcja']),
-            playerLink: cutHyperlink(v['Gracz (Status)']),
+            spyLink: cutHyperlink(String(v['Akcja'])),
+            playerLink: cutHyperlink(String(v['Gracz (Status)'])),
         };
     });
     if (displayPlayerInfo.length > 20) {
@@ -117,11 +117,11 @@ const _findPlanetsByCordinates = (message, args) => {
     };
     const foundPlanet = atlas.find((v) => String(v === null || v === void 0 ? void 0 : v['System']) === position.gal &&
         String(v === null || v === void 0 ? void 0 : v['Galaktyka']) === position.sys &&
-        cutValueFromHyperlink(v === null || v === void 0 ? void 0 : v['Pos']) === position.pos);
+        cutValueFromHyperlink(String(v === null || v === void 0 ? void 0 : v['Pos'])) === position.pos);
     if (!foundPlanet || !(foundPlanet === null || foundPlanet === void 0 ? void 0 : foundPlanet['Gracz (Status)'].length)) {
         return message.channel.send('Nie znaleziono planety na podanych koordynatach!');
     }
-    return _findPlanetsByPlayerName(message, cutValueFromHyperlink(foundPlanet['Gracz (Status)']));
+    return _findPlanetsByPlayerName(message, cutValueFromHyperlink(String(foundPlanet['Gracz (Status)'])));
 };
 const _findPlayersByAlliance = (message, args) => {
     const alliance = args[0];
@@ -133,7 +133,7 @@ const _findPlayersByAlliance = (message, args) => {
         const _alliance = v['Sojusz'];
         return lodash_1.trim(lodash_1.toLower(_alliance)).includes(lodash_1.trim(lodash_1.toLower(alliance)));
     })
-        .map((v) => cutValueFromHyperlink(v['Gracz (Status)'])))
+        .map((v) => cutValueFromHyperlink(String(v['Gracz (Status)']))))
         .sort()
         .join(', ');
     if (!alliedPlayers.length) {
