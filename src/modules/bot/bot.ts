@@ -27,18 +27,6 @@ export class Bot {
         return kalkCommand(message);
       }
 
-      if (message.channel.id !== '774794913559740436') {
-        return null;
-      }
-
-      if (!checkIfHasRoleByID(message.member, ROLA_FLOCIARZ_ID)) {
-        if (message.member.id !== BOT_CHANNEL_ID) {
-          message.channel.send('Masz, poczęstuj się... nie dla psa, kurwaaaa!');
-          
-          return message.channel.send('https://www.wykop.pl/cdn/c3201142/comment_hQTwVCV9joPqjdeJevpSwHSHVaseCwG7.gif');
-        }
-      }
-
       if (command === 'rola') {
         return roleCommand(message, args);
       }
