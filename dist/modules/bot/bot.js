@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MyClient = exports.Bot = void 0;
 const discord_js_1 = require("discord.js");
 const consts_1 = require("../../utils/consts");
-const helpers_1 = require("../../utils/helpers");
 const find_1 = require("./commands/find");
 const kalkulator_1 = require("./commands/kalkulator");
 const role_1 = require("./commands/role");
@@ -22,15 +21,6 @@ class Bot {
             }
             if (command === 'kalkulator') {
                 return kalkulator_1.kalkCommand(message);
-            }
-            if (message.channel.id !== '774794913559740436') {
-                return null;
-            }
-            if (!helpers_1.checkIfHasRoleByID(message.member, consts_1.ROLA_FLOCIARZ_ID)) {
-                if (message.member.id !== consts_1.BOT_CHANNEL_ID) {
-                    message.channel.send('Masz, poczęstuj się... nie dla psa, kurwaaaa!');
-                    return message.channel.send('https://www.wykop.pl/cdn/c3201142/comment_hQTwVCV9joPqjdeJevpSwHSHVaseCwG7.gif');
-                }
             }
             if (command === 'rola') {
                 return role_1.roleCommand(message, args);
