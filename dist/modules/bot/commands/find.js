@@ -99,9 +99,6 @@ const _findPlanetsByPlayerName = (message, player) => {
         if (nick === 'Mhrok') {
             playerEmbed.setImage(`https://cdn.discordapp.com/attachments/774794913559740436/779385553283317770/unknown.png`);
         }
-        if (nick === 'MsDanon') {
-            playerEmbed.setImage(`https://cdn.discordapp.com/attachments/767083101846372462/782540219231633408/she-sucks-his-cock-while-spinning-upside-down.gif`);
-        }
         message.channel.send(playerEmbed);
     }
 };
