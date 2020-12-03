@@ -9,6 +9,8 @@ function default_1(state = INIT_STATE, action) {
     switch (action.type) {
         case AtlasActions.Keys.ADD_ATLAS_ELEMENT:
             return immutability_helper_1.default(state, { atlas: { $push: [action.value] } });
+        case AtlasActions.Keys.ADD_ATLAS_ELEMENTS:
+            return immutability_helper_1.default(state, { atlas: { $push: action.value } });
         default:
             return state;
     }

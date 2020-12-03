@@ -6,7 +6,9 @@ const reducers = combineReducers<RootState>({
   atlasData: atlasReducer,
 });
 
-module.exports = configureStore({
+const store = configureStore({
   reducer: reducers,
   devTools: false,
 });
+
+export default store;

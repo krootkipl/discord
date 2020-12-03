@@ -1,7 +1,7 @@
 export interface AtlasElement {
   position: {
-    g: number;
-    s: number;
+    gal: number;
+    sys: number;
     pos: number;
   },
   player: string;

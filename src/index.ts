@@ -1,7 +1,9 @@
 import { Bot } from './modules/bot/bot';
-require('dotenv').config({path:'./.env.local'});
+import { initAtlas } from './utils/helpers/atlas';
+require('dotenv').config({ path: './.env.local' });
+
+initAtlas();
 
 const bot = new Bot();
-
-
 bot.listen();
+

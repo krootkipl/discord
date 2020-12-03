@@ -5,8 +5,9 @@ const atlas_reducer_1 = require("../reducers/atlas-reducer");
 const reducers = toolkit_1.combineReducers({
     atlasData: atlas_reducer_1.default,
 });
-module.exports = toolkit_1.configureStore({
+const store = toolkit_1.configureStore({
     reducer: reducers,
     devTools: false,
 });
+exports.default = store;
 //# sourceMappingURL=store.js.map
