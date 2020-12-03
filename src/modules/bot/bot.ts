@@ -53,7 +53,7 @@ export class MyClient {
     console.log('client starting...');
 
     this.client.once('ready', () => {
-      console.log('Ready!');
+      console.log('Ready!!!');
     });
   }
 
