@@ -2,23 +2,8 @@ import { EmbedFieldData, MessageEmbed, Permissions } from 'discord.js';
 import { Message } from 'discord.js';
 import { find, toLower, trim, uniq } from 'lodash';
 import { checkPermission } from '../../../utils/helpers';
-
-const atlas: Object[] = require('../../../../resources/atlas.json');
-
-interface DisplayPlayerInfo {
-  gal: number;
-  sys: number;
-  pos: number;
-  player: string;
-  status: string;
-  planet: string;
-  alliance: string;
-  rank: string;
-  moon: string;
-  planetLink: string;
-  spyLink: string;
-  playerLink: string;
-}
+import store from '../../../utils/store';
+import { AtlasElement } from '../../../utils/types/atlas';
 
 export const findCommand = (message: Message, args: string[]) => {
   if (!args.length) {
@@ -49,55 +34,26 @@ export const findCommand = (message: Message, args: string[]) => {
 };
 
 const _findPlanetsByPlayerName = (message: Message, player: string) => {
-  const fullPlayersInfo = atlas.filter((v) => {
-    if (v.hasOwnProperty('Gracz (Status)')) {
-      let name = cutValueFromHyperlink(String(v?.['Gracz (Status)']));
+  const { atlas } = store.getState().atlasData;
 
-      if (typeof name === 'string') {
-        name = name.split(' ').join('_');
+  const playerPlanets = atlas.filter((v: AtlasElement) => {
+    const name = v.player.replace(' ', '_');
 
-        return trim(toLower(name)) === trim(toLower(player));
-      }
-
-      return false;
-    }
+    return trim(toLower(name)).includes(trim(toLower(player)));
   });
 
-  if (!fullPlayersInfo.length) {
-    return message.channel.send(`Nie znaleziono gracza o nicku ${player}! Aby uzyskać pomoc wpisz !znajdz -h`);
+  if (!playerPlanets.length) {
+    return message.channel.send(`Nie znaleziono gracza o nicku ${player.replace('_', ' ')}! Aby uzyskać pomoc wpisz !znajdz -h`);
   }
 
-  let displayPlayerInfo = fullPlayersInfo.map<DisplayPlayerInfo>((v) => {
-    const posString = String(v['Pos']);
-
-    return {
-      gal: v['System'],
-      sys: v['Galaktyka'],
-      pos: Number(cutValueFromHyperlink(posString)),
-      player: cutValueFromHyperlink(String(v['Gracz (Status)'])),
-      status: v['Status'],
-      planet: cutActivityFromPlanetName(String(v['Nazwa (Aktywność)'])),
-      alliance: v['Sojusz'] !== '-' ? v['Sojusz'] : '',
-      rank: v['Ranking'],
-      moon: v['Księżyc'],
-      planetLink: cutHyperlink(posString),
-      spyLink: cutHyperlink(String(v['Akcja'])),
-      playerLink: cutHyperlink(String(v['Gracz (Status)'])),
-    };
-  });
-
-  if (displayPlayerInfo.length > 20) {
-    if (!displayPlayerInfo.some((v: DisplayPlayerInfo) => v.player === player)) {
-      return message.channel.send(`Wpisz dokładniejszy nick, znalazłem ponad 20 wyników! Nie chcemy zaśmiecać chatu, prawda? :D`);
-    } else {
-      displayPlayerInfo = displayPlayerInfo.filter((v: DisplayPlayerInfo) => v.player === player);
-      message.channel.send(`Znalazłem ponad 20 wyników! Wyświetlę tylko te najtrafniejsze, wpisz dokładniejszy nick!`);
-    }
+  if (playerPlanets.length > 12) {
+    const foundPlayers = [...new Set(playerPlanets.map((v: AtlasElement) => v.player))];
+    return message.channel.send(`Znalazłem za dużo wyników! Znalezieni gracze to: ${foundPlayers.join(', ')}.`);
   }
 
-  const multiplePlayersInfo: { [player: string]: DisplayPlayerInfo[] } = {};
+  const multiplePlayersInfo: { [player: string]: AtlasElement[] } = {};
 
-  displayPlayerInfo.forEach((v) => {
+  playerPlanets.forEach((v) => {
     if (!multiplePlayersInfo[v.player]) {
       multiplePlayersInfo[v.player] = [v];
     } else {
@@ -112,28 +68,27 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     const playerEmbed = new MessageEmbed();
 
     playerEmbed.setTitle(`${nick}`);
-    playerEmbed.setDescription(`${!!firstElm?.alliance ? `Sojusz ${firstElm.alliance}` : ''} [Karta gracza](${firstElm.playerLink})`);
+    playerEmbed.setDescription(`${!!firstElm?.alliance ? `Sojusz ${firstElm.alliance}` : ''} [Karta gracza](${firstElm.links.playerLink})`);
 
-    const fields = data.map<EmbedFieldData>((v: DisplayPlayerInfo) => {
+    const fields = data.map<EmbedFieldData>((v: AtlasElement) => {
+      const {
+        planet,
+        moon,
+        position: { gal, sys, pos },
+        links: { planetLink, spyLink },
+      } = v;
+
       return {
-        name: v.planet,
-        value: `${!!v.moon ? `Księżyc: ${v.moon}` : ''}\n
-        [${v.gal}:${v.sys}:${v.pos}](${v.planetLink})
-        [Szpieguj](${v.spyLink})`,
+        name: planet,
+        value: `${!!moon ? `Księżyc: ${moon}` : ''}\n
+        [${gal}:${sys}:${pos}](${planetLink})
+        [Szpieguj](${spyLink})`,
         inline: true,
       };
     });
 
     playerEmbed.addFields(fields);
     playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 26.11.2020`);
-
-    if (nick === 'dznwl') {
-      playerEmbed.setImage(`https://media.giphy.com/media/13OYNXi0uTM6vS/giphy.gif`);
-    }
-
-    if (nick === 'WirujoncyHooy') {
-      playerEmbed.setImage(`https://www.wykop.pl/cdn/c3201142/comment_15995607238c7XuG6Y2HL1f9cSjI4FD6.jpg`);
-    }
 
     if (nick === 'Mhrok') {
       playerEmbed.setImage(`https://cdn.discordapp.com/attachments/774794913559740436/779385553283317770/unknown.png`);
@@ -144,6 +99,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 };
 
 const _findPlanetsByCordinates = (message: Message, args: string[]) => {
+  const { atlas } = store.getState().atlasData;
   let coordinates = args.find((v) => v.match(/\[*[1-4]:[0-9]{1,3}:[0-9]{1,2}\]*/));
 
   if (!coordinates) {
@@ -156,41 +112,32 @@ const _findPlanetsByCordinates = (message: Message, args: string[]) => {
   const splittedCoordinates = coordinates.split(':');
 
   const position = {
-    gal: splittedCoordinates[0],
-    sys: splittedCoordinates[1],
-    pos: splittedCoordinates[2],
+    gal: Number(splittedCoordinates[0]),
+    sys: Number(splittedCoordinates[1]),
+    pos: Number(splittedCoordinates[2]),
   };
 
-  const foundPlanet = atlas.find(
-    (v) =>
-      String(v?.['System']) === position.gal &&
-      String(v?.['Galaktyka']) === position.sys &&
-      cutValueFromHyperlink(String(v?.['Pos'])) === position.pos
-  );
+  const foundPlanet = atlas.find((v: AtlasElement) => {
+    const { gal, sys, pos } = v.position;
 
-  if (!foundPlanet || !foundPlanet?.['Gracz (Status)'].length) {
+    return gal === position.gal && sys === position.sys && pos === position.pos;
+  });
+
+  if (!foundPlanet) {
     return message.channel.send('Nie znaleziono planety na podanych koordynatach!');
   }
 
-  return _findPlanetsByPlayerName(message, cutValueFromHyperlink(String(foundPlanet['Gracz (Status)'])));
+  return _findPlanetsByPlayerName(message, foundPlanet.player.replace(' ', '_'));
 };
 
 const _findPlayersByAlliance = (message: Message, args: string[]) => {
+  const { atlas } = store.getState().atlasData;
   const alliance = args[0];
 
-  const alliedPlayers = uniq(
-    atlas
-      .filter((v) => {
-        if (!v.hasOwnProperty('Sojusz') || v['Sojusz'] === '-') {
-          return false;
-        }
-
-        const _alliance = v['Sojusz'];
-
-        return trim(toLower(_alliance)).includes(trim(toLower(alliance)));
-      })
-      .map((v) => cutValueFromHyperlink(String(v['Gracz (Status)'])))
-  )
+  const alliedPlayers = atlas
+    .filter((v: AtlasElement) => {
+      return trim(toLower(v.alliance)) === trim(toLower(alliance));
+    })
     .sort()
     .join(', ');
 
@@ -216,19 +163,3 @@ const statusSelector = (status: string) => {
       return null;
   }
 };
-
-const cutValueFromHyperlink = (link: string) => {
-  let value = link.substring(link.indexOf(';') + 1, link.length - 1).trim();
-
-  return value.substr(1, value.length - 2);
-};
-
-const cutActivityFromPlanetName = (name: string) => {
-  if (name.indexOf('(') > -1) {
-    return name.substring(0, name.indexOf('(') - 1);
-  }
-
-  return name;
-};
-
-const cutHyperlink = (link: string) => link.substring(link.indexOf('(') + 3, link.indexOf(';') - 1);

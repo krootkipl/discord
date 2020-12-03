@@ -2,9 +2,12 @@ import { Client, Message, MessageEmbed } from 'discord.js';
 
 import { BOT_CHANNEL_ID, PREFIX, ROLA_FLOCIARZ_ID } from '../../utils/consts';
 import { checkIfHasRoleByID } from '../../utils/helpers';
+import store from '../../utils/store';
 import { findCommand } from './commands/find';
 import { kalkCommand } from './commands/kalkulator';
 import { roleCommand } from './commands/role';
+import * as AtlasActions from './actions/atlasActions';
+import { AtlasElement } from '../../utils/types/atlas';
 
 export class Bot {
   public listen() {

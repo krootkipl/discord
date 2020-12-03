@@ -1,4 +1,4 @@
-import { IRole } from './types';
+import { IRole } from './types/role';
 
 export const PREFIX = '!';
 
