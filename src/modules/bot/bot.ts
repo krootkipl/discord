@@ -35,7 +35,7 @@ export class Bot {
         return findCommand(message, args);
       }
 
-      return message.channel.send('Nieznana komenda! Dostępne komendy to: !rola, !kalkulator, !znajdz');
+      return message.channel.send('Nieznana komenda!! Dostępne komendy to: !rola, !kalkulator, !znajdz');
     });
 
     myClient._login();
