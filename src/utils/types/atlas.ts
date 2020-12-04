@@ -13,6 +13,7 @@ export interface AtlasElement {
   links: {
     planetLink: string;
     spyLink: string;
+    moonSpyLink: string;
     playerLink: string;
   }
 }
