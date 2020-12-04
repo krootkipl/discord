@@ -69,18 +69,18 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
     playerEmbed.setTitle(`${nick}`);
     playerEmbed.setDescription(`${!!firstElm?.alliance ? `Sojusz ${firstElm.alliance}` : ''} [Karta gracza](${firstElm.links.playerLink})`);
-
+    console.log('data: ', data);
     const fields = data.map<EmbedFieldData>((v: AtlasElement) => {
       const {
         planet,
         moon,
         position: { gal, sys, pos },
-        links: { planetLink, spyLink },
+        links: { planetLink, spyLink, moonSpyLink },
       } = v;
 
       return {
         name: planet,
-        value: `${!!moon ? `Księżyc: ${moon}` : ''}\n
+        value: `${!!moon ? `Księżyc: ${moon}\n[Szpieguj księżyc](${moonSpyLink})` : ''}\n
         [${gal}:${sys}:${pos}](${planetLink})
         [Szpieguj](${spyLink})`,
         inline: true,
@@ -88,7 +88,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     });
 
     playerEmbed.addFields(fields);
-    playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 26.11.2020`);
+    playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 04.12.2020`);
 
     if (nick === 'Mhrok') {
       playerEmbed.setImage(`https://cdn.discordapp.com/attachments/774794913559740436/779385553283317770/unknown.png`);

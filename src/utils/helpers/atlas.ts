@@ -32,13 +32,14 @@ export const initAtlas = () => {
       },
       player: cutValueFromHyperlink(String(v['Gracz (Status)'])),
       status: v['Status'],
-      planet: cutActivityFromPlanetName(String(v['Nazwa (Aktywność)'])),
+      planet: cutValueFromHyperlink(String(v['Nazwa (Aktywność)'])),
       alliance: v['Sojusz'] !== '-' ? v['Sojusz'] : '',
       rank: v['Ranking'],
-      moon: v['Księżyc'],
+      moon: cutValueFromHyperlink(String(v['Księżyc'])),
       links: {
         planetLink: cutHyperlink(String(v['Pos'])),
-        spyLink: cutHyperlink(String(v['Akcja'])),
+        spyLink: cutHyperlink(String(v['Nazwa (Aktywność)'])),
+        moonSpyLink: cutHyperlink(String(v['Księżyc'])),
         playerLink: cutHyperlink(String(v['Gracz (Status)'])),
       },
     };
