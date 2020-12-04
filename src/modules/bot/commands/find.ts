@@ -69,7 +69,6 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
     playerEmbed.setTitle(`${nick}`);
     playerEmbed.setDescription(`${!!firstElm?.alliance ? `Sojusz ${firstElm.alliance}` : ''} [Karta gracza](${firstElm.links.playerLink})`);
-    console.log('data: ', data);
     const fields = data.map<EmbedFieldData>((v: AtlasElement) => {
       const {
         planet,
