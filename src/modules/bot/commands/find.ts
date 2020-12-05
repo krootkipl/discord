@@ -77,9 +77,9 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
       return {
         name: planet,
-        value: `${!!moon ? `Księżyc: ${moon}` : ''}\n
-        [${gal}:${sys}:${pos}](${planetLink})
-        [Szpieguj](${spyLink})`,
+        value: `[${gal}:${sys}:${pos}](${planetLink})
+        [Szpieguj](${spyLink})
+        ${!!moon ? `Księżyc: ${moon}` : ''}`,
         inline: true,
       };
     });
