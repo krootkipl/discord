@@ -36,19 +36,19 @@ export const findCommand = (message: Message, args: string[]) => {
 const _findPlanetsByPlayerName = (message: Message, player: string) => {
   const { atlas } = store.getState().atlasData;
 
-  const playerPlanets = atlas.filter((v: AtlasElement) => {
-    const name = v.player.replace(' ', '_');
-
-    return trim(toLower(name)).includes(trim(toLower(player)));
-  });
+  let playerPlanets = atlas.filter((v: AtlasElement) => trim(toLower(v.player.replace(' ', '_'))).includes(trim(toLower(player))));
 
   if (!playerPlanets.length) {
     return message.channel.send(`Nie znaleziono gracza o nicku ${player.replace('_', ' ')}! Aby uzyskać pomoc wpisz !znajdz -h`);
   }
 
-  if (playerPlanets.length > 12) {
+  if (playerPlanets.length > 12 && !playerPlanets.some((v: AtlasElement) => _equalPlayerNames(v.player, player))) {
     const foundPlayers = [...new Set(playerPlanets.map((v: AtlasElement) => v.player))];
     return message.channel.send(`Znalazłem za dużo wyników! Znalezieni gracze to: ${foundPlayers.join(', ')}.`);
+  }
+
+  if (playerPlanets.some((v: AtlasElement) => _equalPlayerNames(v.player, player))) {
+    playerPlanets = playerPlanets.filter((v: AtlasElement) => _equalPlayerNames(v.player, player));
   }
 
   const multiplePlayersInfo: { [player: string]: AtlasElement[] } = {};
@@ -63,8 +63,6 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
   for (let [nick, data] of Object.entries(multiplePlayersInfo)) {
     const firstElm = data[0];
-    const statusInfo = statusSelector(firstElm.status);
-
     const playerEmbed = new MessageEmbed();
 
     playerEmbed.setTitle(`${nick}`);
@@ -79,7 +77,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
       return {
         name: planet,
-        value: `${!!moon ? `Księżyc: ${moon}\n[Szpieguj księżyc](${moonSpyLink})` : ''}\n
+        value: `${!!moon ? `Księżyc: ${moon}` : ''}\n
         [${gal}:${sys}:${pos}](${planetLink})
         [Szpieguj](${spyLink})`,
         inline: true,
@@ -147,18 +145,4 @@ const _findPlayersByAlliance = (message: Message, args: string[]) => {
   return message.channel.send(alliedPlayers);
 };
 
-const statusSelector = (status: string) => {
-  switch (status) {
-    case 'i':
-      return 'nieaktywny przynajmniej 7 dni';
-
-    case 'I':
-      return 'nieaktywny przynajmniej 30 dni';
-
-    case 'u':
-      return 'gracz na urlopie';
-
-    default:
-      return null;
-  }
-};
+const _equalPlayerNames = (name: string, player: string) => trim(toLower(name.replace(' ', '_'))) === trim(toLower(player));
