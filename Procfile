@@ -1,2 +1,2 @@
-web: npm run script
+web: npm run build
 worker: node dist/index.js
