@@ -24,6 +24,12 @@ export const initAtlas = () => {
   const filteredAtlas = atlas.filter((v) => !!String(v['Gracz (Status)']).length);
 
   const remappedAtlasValues: AtlasElement[] = filteredAtlas.map<AtlasElement>((v) => {
+    let moonValue = String(v['Księżyc']);
+
+    if (moonValue.includes('HYPERLINK')) {
+      moonValue = cutValueFromHyperlink(moonValue); 
+    }
+
     return {
       position: {
         gal: Number(v['System']),
@@ -35,7 +41,7 @@ export const initAtlas = () => {
       planet: cutValueFromHyperlink(String(v['Nazwa (Aktywność)'])),
       alliance: v['Sojusz'] !== '-' ? v['Sojusz'] : '',
       rank: v['Ranking'],
-      moon: cutValueFromHyperlink(String(v['Księżyc'])),
+      moon: moonValue,
       links: {
         planetLink: cutHyperlink(String(v['Pos'])),
         spyLink: cutHyperlink(String(v['Nazwa (Aktywność)'])),
