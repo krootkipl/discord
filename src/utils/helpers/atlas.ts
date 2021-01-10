@@ -21,32 +21,32 @@ const cutActivityFromPlanetName = (name: string) => {
 const cutHyperlink = (link: string) => link.substring(link.indexOf('(') + 3, link.indexOf(';') - 1);
 
 export const initAtlas = () => {
-  const filteredAtlas = atlas.filter((v) => !!String(v['Gracz (Status)']).length);
+  const filteredAtlas = atlas.filter((v) => !!String(v['Player (State)']).length);
 
   const remappedAtlasValues: AtlasElement[] = filteredAtlas.map<AtlasElement>((v) => {
-    let moonValue = String(v['Księżyc']);
+    let moonValue = String(v['Moon']);
 
     if (moonValue.includes('HYPERLINK')) {
-      moonValue = cutValueFromHyperlink(moonValue); 
+      moonValue = cutValueFromHyperlink(moonValue);
     }
 
     return {
       position: {
         gal: Number(v['System']),
         sys: Number(v['Galaktyka']),
-        pos: Number(cutValueFromHyperlink(String(v['Pos']))),
+        pos: Number(cutValueFromHyperlink(String(v['Pos.']))),
       },
-      player: cutValueFromHyperlink(String(v['Gracz (Status)'])),
-      status: v['Status'],
-      planet: cutValueFromHyperlink(String(v['Nazwa (Aktywność)'])),
-      alliance: v['Sojusz'] !== '-' ? v['Sojusz'] : '',
-      rank: v['Ranking'],
+      player: String(v['Player (State)']),
+      status: String(v['Status']),
+      planet: cutValueFromHyperlink(String(v['Name (Activity)'])),
+      alliance: v['Alliance'] !== '-' ? String(v['Alliance']) : '',
+      rank: String(v['Pozycja']),
       moon: moonValue,
       links: {
-        planetLink: cutHyperlink(String(v['Pos'])),
-        spyLink: cutHyperlink(String(v['Nazwa (Aktywność)'])),
-        moonSpyLink: cutHyperlink(String(v['Księżyc'])),
-        playerLink: cutHyperlink(String(v['Gracz (Status)'])),
+        planetLink: cutHyperlink(String(v['Pos.'])),
+        spyLink: cutHyperlink(String(v['Name (Activity)'])),
+        moonSpyLink: String(v['Moon']),
+        playerLink: String(v['Player (State)']),
       },
     };
   });

@@ -29,7 +29,6 @@ export const findCommand = (message: Message, args: string[]) => {
   }
 
   const player = args.filter((v) => v.indexOf('-') !== 0).join('_');
-
   return _findPlanetsByPlayerName(message, player);
 };
 
@@ -85,7 +84,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
     });
 
     playerEmbed.addFields(fields);
-    playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 04.12.2020`);
+    playerEmbed.setFooter(`Uwaga! Wpisy z atlasu nie działają w czasie rzeczywistym! Stan na 10.01.2021`);
 
     if (nick === 'Mhrok') {
       playerEmbed.setImage(`https://cdn.discordapp.com/attachments/774794913559740436/779385553283317770/unknown.png`);
