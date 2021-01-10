@@ -20,7 +20,7 @@ const cutActivityFromPlanetName = (name: string) => {
 
 const cutHyperlink = (link: string) => link.substring(link.indexOf('(') + 3, link.indexOf(';') - 1);
 
-export const initAtlas = () => {
+export const atlasInit = () => {
   const filteredAtlas = atlas.filter((v) => !!String(v['Gracz (Status)']).length);
 
   const remappedAtlasValues: AtlasElement[] = filteredAtlas.map<AtlasElement>((v) => {

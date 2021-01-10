@@ -1,7 +1,7 @@
-import { EmbedFieldData, MessageEmbed, Permissions } from 'discord.js';
-import { Message } from 'discord.js';
-import { find, toLower, trim, uniq } from 'lodash';
-import { checkPermission } from '../../../utils/helpers';
+import { EmbedFieldData, Message, MessageEmbed } from 'discord.js';
+import { toLower, trim } from 'lodash';
+
+import { getCoordinatesFromArgs } from '../../../utils/helpers/coordinates';
 import store from '../../../utils/store';
 import { AtlasElement } from '../../../utils/types/atlas';
 
@@ -67,6 +67,7 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
     playerEmbed.setTitle(`${nick}`);
     playerEmbed.setDescription(`${!!firstElm?.alliance ? `Sojusz ${firstElm.alliance}` : ''} [Karta gracza](${firstElm.links.playerLink})`);
+
     const fields = data.map<EmbedFieldData>((v: AtlasElement) => {
       const {
         planet,
@@ -97,22 +98,11 @@ const _findPlanetsByPlayerName = (message: Message, player: string) => {
 
 const _findPlanetsByCordinates = (message: Message, args: string[]) => {
   const { atlas } = store.getState().atlasData;
-  let coordinates = args.find((v) => v.match(/\[*[1-4]:[0-9]{1,3}:[0-9]{1,2}\]*/));
+  const position = getCoordinatesFromArgs(args);
 
-  if (!coordinates) {
+  if (!position) {
     return message.channel.send('Koordynaty wpisane niepoprawnie! Przykłady => 1:2:3, [4:200:3]');
   }
-
-  coordinates = coordinates.replace('[', '');
-  coordinates = coordinates.replace(']', '');
-
-  const splittedCoordinates = coordinates.split(':');
-
-  const position = {
-    gal: Number(splittedCoordinates[0]),
-    sys: Number(splittedCoordinates[1]),
-    pos: Number(splittedCoordinates[2]),
-  };
 
   const foundPlanet = atlas.find((v: AtlasElement) => {
     const { gal, sys, pos } = v.position;

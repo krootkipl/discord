@@ -1,13 +1,10 @@
-import { Client, Message, MessageEmbed } from 'discord.js';
+import { Client, Message } from 'discord.js';
 
-import { BOT_CHANNEL_ID, PREFIX, ROLA_FLOCIARZ_ID } from '../../utils/consts';
-import { checkIfHasRoleByID } from '../../utils/helpers';
-import store from '../../utils/store';
+import { PREFIX } from '../../utils/consts';
+import { farmCommand } from './commands/farms';
 import { findCommand } from './commands/find';
 import { kalkCommand } from './commands/kalkulator';
 import { roleCommand } from './commands/role';
-import * as AtlasActions from './actions/atlasActions';
-import { AtlasElement } from '../../utils/types/atlas';
 
 export class Bot {
   public listen() {
@@ -36,6 +33,10 @@ export class Bot {
 
       if (command === 'znajdz') {
         return findCommand(message, args);
+      }
+
+      if (command === 'farmy') {
+        return farmCommand(message, args);
       }
 
       return message.channel.send('Nieznana komenda!! Dostępne komendy to: !rola, !kalkulator, !znajdz');

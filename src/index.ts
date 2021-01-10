@@ -1,9 +1,12 @@
+import { mongoConnect } from './database/mongoose';
 import { Bot } from './modules/bot/bot';
-import { initAtlas } from './utils/helpers/atlas';
+import { atlasInit } from './utils/helpers/atlas';
+
 require('dotenv').config({ path: './.env.local' });
 
-initAtlas();
+atlasInit();
+
+export const db = mongoConnect();
 
 const bot = new Bot();
 bot.listen();
-
